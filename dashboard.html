@@ -85,26 +85,33 @@
             const { count: unread } = await sup.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', myId).eq('is_read', false);
             if(unread > 0) { document.getElementById('unreadBadge').innerText = unread; document.getElementById('unreadBadge').style.display='block'; }
 
-            // LADE PRIVATE DUELLE
-            const { data: privates } = await sup.from('user_challenges')
-                .select('*, profiles!user_challenges_creator_id_fkey(username)')
+            // LADE PRIVATE DUELLE (ROBUSTER LADEPfad)
+            const { data: privates, error: privError } = await sup.from('user_challenges')
+                .select('*')
                 .eq('target_id', myId)
                 .eq('status', 'pending');
             
             if(privates && privates.length > 0) {
-                document.getElementById('privateSection').style.display = 'block';
+                const pSection = document.getElementById('privateSection');
                 const pList = document.getElementById('privateList');
+                pSection.style.display = 'block';
                 pList.innerHTML = '';
-                privates.forEach(p => {
+                
+                for(const p of privates) {
+                    // Hole den Namen des Herausforderers separat
+                    const { data: creator } = await sup.from('profiles').select('username').eq('id', p.creator_id).single();
+                    const senderName = creator ? creator.username : 'Ein Freund';
+
                     pList.innerHTML += `
-                        <div class="card" style="border-color: #facc15;" onclick="openPrivate('${p.id}', '${p.title}', '${p.description}', '${p.prize_text}', '${p.profiles.username}')">
+                        <div class="card" style="border-color: #facc15;" onclick="openPrivate('${p.id}', '${p.title}', '${p.description}', '${p.prize_text}', '${senderName}')">
                             <div>
                                 <h3 style="color:#facc15">${p.title}</h3>
-                                <p>Von: ${p.profiles.username} | Preis: ${p.prize_text}</p>
+                                <p>Herausforderer: ${senderName}</p>
+                                <p style="font-size:10px; color:#facc15; font-weight:bold">🎁 PREIS: ${p.prize_text}</p>
                             </div>
                             <div class="pts">⚔️</div>
                         </div>`;
-                });
+                }
             }
 
             // LADE GLOBALE QUESTS
