@@ -3,45 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chat - Challenge Me</title>
+    <title>Messenger - Challenge Me</title>
     <style>
         body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-        header { padding: 20px; background: #062d24; border-bottom: 1px solid #064e3b; text-align: center; }
-        h1 { font-style: italic; font-size: 20px; margin: 0; }
-        .chat-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        header { padding: 20px; background: #062d24; border-bottom: 1px solid #064e3b; text-align: center; position: sticky; top: 0; z-index: 100; }
+        h1 { font-style: italic; font-size: 22px; margin: 0; color: #10b981; }
+        
+        /* Chat Liste (WhatsApp Style) */
+        .chat-list { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+        .chat-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #064e3b; cursor: pointer; transition: background 0.2s; }
+        .chat-item:active { background: #064e3b; }
+        .avatar { width: 50px; height: 50px; background: #059669; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; margin-right: 15px; font-weight: bold; flex-shrink: 0; }
+        .chat-info { flex: 1; overflow: hidden; }
+        .chat-name { color: white; font-weight: bold; font-size: 16px; margin-bottom: 4px; }
+        .chat-last-msg { color: #059669; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .unread-dot { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; margin-left: 10px; flex-shrink: 0; }
+
+        /* Detail Chat Ansicht */
+        #detailView { position: fixed; inset: 0; background: #061c14; z-index: 2000; display: none; flex-direction: column; }
+        .back-btn { background: none; border: none; color: #10b981; font-size: 18px; font-weight: bold; cursor: pointer; padding: 10px; }
+        .msg-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
         .msg { max-width: 80%; padding: 12px 15px; border-radius: 15px; font-size: 14px; line-height: 1.4; }
         .msg.me { align-self: flex-end; background: #10b981; color: white; border-bottom-right-radius: 2px; }
         .msg.them { align-self: flex-start; background: #064e3b; color: #d1fae5; border-bottom-left-radius: 2px; }
-        
-        .input-area { padding: 15px; background: #062d24; border-top: 1px solid #064e3b; display: flex; gap: 10px; padding-bottom: 100px; }
+        .input-area { padding: 15px; background: #062d24; border-top: 1px solid #064e3b; display: flex; gap: 10px; padding-bottom: 30px; }
         input { flex: 1; padding: 12px; background: #061c14; border: 1px solid #064e3b; border-radius: 10px; color: white; outline: none; }
         .send-btn { width: 50px; height: 45px; background: #10b981; border: none; border-radius: 10px; color: white; font-weight: bold; }
-        
+
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
     <header>
-        <h1 id="chatTitle">Messenger</h1>
-        <select id="friendSelect" style="background:#061c14; color:#10b981; border:none; margin-top:10px; font-size:12px;">
-            <option value="">Wähle einen Freund...</option>
-        </select>
+        <h1>MESSENGER</h1>
     </header>
 
-    <div class="chat-area" id="chatList">
-        <div style="text-align:center; opacity:0.5; margin-top:50px;">Wähle einen Chatpartner aus...</div>
+    <div class="chat-list" id="chatList">
+        <div style="text-align:center; padding:50px; opacity:0.5;">Lade Chats...</div>
     </div>
 
-    <form class="input-area" id="chatForm">
-        <input type="text" id="msgText" placeholder="Nachricht schreiben..." required>
-        <button type="submit" class="send-btn">🚀</button>
-    </form>
+    <!-- Vollbild Detail Chat -->
+    <div id="detailView">
+        <header style="display:flex; align-items:center; justify-content:space-between; padding: 10px 20px;">
+            <button class="back-btn" onclick="closeChat()">✕</button>
+            <h1 id="activeChatPartner" style="font-size: 18px;">Name</h1>
+            <div style="width:20px"></div>
+        </header>
+        <div class="msg-area" id="msgArea"></div>
+        <form class="input-area" id="chatForm">
+            <input type="text" id="msgText" placeholder="Nachricht..." required>
+            <button type="submit" class="send-btn">🚀</button>
+        </form>
+    </div>
 
     <div class="nav">
         <a href="dashboard.html">🏠</a>
         <a href="rewards.html">🎁</a>
-        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14;">+</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold; font-size:28px;">+</a>
         <a href="friends.html">👥</a>
         <a href="chat.html">💬</a>
     </div>
@@ -55,67 +74,96 @@
             const { data: { session } } = await sup.auth.getSession();
             if(!session) return window.location.href = 'index.html';
             myId = session.user.id;
-
-            // Check if a specific friend should be pre-selected (via URL ?id=...)
-            const urlParams = new URLSearchParams(window.location.search);
-            const preSelectedId = urlParams.get('id');
-
-            // Freunde sicher laden
-            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', myId).eq('status', 'accepted');
-            const sel = document.getElementById('friendSelect');
+            loadChatList();
             
-            if(fships && fships.length > 0) {
-                const ids = fships.map(f => f.user_id_2);
-                const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
-                
-                profiles.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.innerText = p.username;
-                    if(p.id === preSelectedId) opt.selected = true;
-                    sel.appendChild(opt);
-                });
-                
-                if(preSelectedId) { targetId = preSelectedId; loadMsgs(); }
+            // Echtzeit-Update nur für die Liste
+            sup.channel('list-updates').on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => loadChatList()).subscribe();
+        }
+
+        async function loadChatList() {
+            // Freunde laden
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', myId).eq('status', 'accepted');
+            if(!fships || fships.length === 0) {
+                document.getElementById('chatList').innerHTML = '<p style="text-align:center; padding:50px; opacity:0.5;">Füge Freunde hinzu, um zu chatten!</p>';
+                return;
             }
 
-            sel.onchange = () => { targetId = sel.value; loadMsgs(); };
+            const ids = fships.map(f => f.user_id_2);
+            const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
             
-            // Realtime Abo für Nachrichten
-            sup.channel('custom-all-channel')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-                if(payload.new.sender_id === targetId || payload.new.receiver_id === targetId) loadMsgs();
+            const listDiv = document.getElementById('chatList');
+            listDiv.innerHTML = '';
+
+            for (const p of profiles) {
+                // Letzte Nachricht & Ungelesen Check
+                const { data: msg } = await sup.from('messages')
+                    .select('*')
+                    .or(`and(sender_id.eq.${myId},receiver_id.eq.${p.id}),and(sender_id.eq.${p.id},receiver_id.eq.${myId})`)
+                    .order('created_at', { ascending: false }).limit(1).single();
+
+                const { count: unread } = await sup.from('messages')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('sender_id', p.id).eq('receiver_id', myId).eq('is_read', false);
+
+                listDiv.innerHTML += `
+                    <div class="chat-item" onclick="openChat('${p.id}', '${p.username}')">
+                        <div class="avatar">${p.username[0].toUpperCase()}</div>
+                        <div class="chat-info">
+                            <div class="chat-name">${p.username}</div>
+                            <div class="chat-last-msg">${msg ? msg.content : 'Keine Nachrichten'}</div>
+                        </div>
+                        ${unread > 0 ? '<div class="unread-dot"></div>' : ''}
+                    </div>`;
+            }
+        }
+
+        async function openChat(id, name) {
+            targetId = id;
+            document.getElementById('activeChatPartner').innerText = name;
+            document.getElementById('detailView').style.display = 'flex';
+            
+            // Als gelesen markieren
+            await sup.from('messages').update({ is_read: true }).eq('sender_id', targetId).eq('receiver_id', myId);
+            
+            loadMessages();
+            
+            // Spezielles Realtime Abo für diesen Chat
+            const channel = sup.channel('active-chat').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                if(payload.new.sender_id === targetId || (payload.new.sender_id === myId && payload.new.receiver_id === targetId)) loadMessages();
             }).subscribe();
         }
 
-        async function loadMsgs() {
+        function closeChat() {
+            document.getElementById('detailView').style.display = 'none';
+            targetId = null;
+            loadChatList();
+        }
+
+        async function loadMessages() {
             if(!targetId) return;
             const { data: msgs } = await sup.from('messages')
                 .select('*')
                 .or(`and(sender_id.eq.${myId},receiver_id.eq.${targetId}),and(sender_id.eq.${targetId},receiver_id.eq.${myId})`)
                 .order('created_at', { ascending: true });
             
-            const list = document.getElementById('chatList');
-            list.innerHTML = '';
+            const area = document.getElementById('msgArea');
+            area.innerHTML = '';
             msgs.forEach(m => {
                 const div = document.createElement('div');
                 div.className = m.sender_id === myId ? 'msg me' : 'msg them';
                 div.innerText = m.content;
-                list.appendChild(div);
+                area.appendChild(div);
             });
-            list.scrollTop = list.scrollHeight;
+            area.scrollTop = area.scrollHeight;
         }
 
         document.getElementById('chatForm').onsubmit = async (e) => {
             e.preventDefault();
             const text = document.getElementById('msgText');
             if(!targetId || !text.value) return;
-
-            const { error } = await sup.from('messages').insert([
-                { sender_id: myId, receiver_id: targetId, content: text.value }
-            ]);
-            if(!error) text.value = '';
-            loadMsgs();
+            await sup.from('messages').insert([{ sender_id: myId, receiver_id: targetId, content: text.value }]);
+            text.value = '';
+            loadMessages();
         }
 
         init();
