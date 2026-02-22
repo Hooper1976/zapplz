@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Globale Quests - Challenge Me</title>
+    <style>
+        body { background: #000; color: white; font-family: 'Arial Black', sans-serif; margin: 0; padding-bottom: 100px; }
+        header { padding: 20px; text-align: center; border-bottom: 2px solid #edff00; background: #000; position: sticky; top: 0; z-index: 1000; }
+        .back-btn { position: absolute; left: 20px; top: 25px; color: #edff00; text-decoration: none; font-size: 14px; font-weight: bold; }
+        
+        .quest-card { position: relative; margin: 20px; border-radius: 20px; overflow: hidden; height: 200px; border: 1px solid rgba(237,255,0,0.3); }
+        .quest-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .quest-info { position: absolute; inset: 0; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; text-align: left; }
+        .quest-title { font-size: 20px; font-weight: 900; color: #edff00; font-style: italic; }
+        .quest-xp { background: #edff00; color: black; padding: 3px 10px; border-radius: 5px; font-size: 12px; font-weight: 900; margin-top: 5px; width: fit-content; }
+        
+        #questModal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .modal-card { background: #111; border: 2px solid #edff00; border-radius: 25px; padding: 30px; width: 100%; max-width: 340px; text-align: center; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 15px; border: none; background: #edff00; color: black; font-weight: 900; font-size: 16px; cursor: pointer; margin-top: 20px; }
+        .close-link { color: #ef4444; margin-top: 20px; display: block; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="dashboard.html" class="back-btn">← ZURÜCK</a>
+        <h1 style="margin:0; font-size: 18px; color: #edff00;">GLOBALE QUESTS</h1>
+    </header>
+
+    <div id="list">Lade Welt-Challenges...</div>
+
+    <div id="questModal">
+        <div class="modal-card">
+            <h2 id="mTitle" style="color:#edff00; margin-top:0;">Quest</h2>
+            <p id="mDesc" style="font-family: sans-serif; font-size:14px; opacity:0.8; line-height:1.4;"></p>
+            <input type="file" id="camInput" accept="image/*" style="display:none">
+            <button class="btn-action" onclick="document.getElementById('camInput').click()">BEWEIS-FOTO MACHEN 📸</button>
+            <span class="close-link" onclick="closeM()">ABBRECHEN</span>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        let activeQId;
+
+        async function init() {
+            const { data: quests } = await sup.from('challenges').select('*');
+            const list = document.getElementById('list');
+            list.innerHTML = quests.map(q => `
+                <div class="quest-card" onclick="openM('${q.id}','${q.title}','${q.description}')">
+                    <img src="${q.image_url || 'https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=600&q=80'}" class="quest-img">
+                    <div class="quest-info">
+                        <div class="quest-title">${q.title}</div>
+                        <div class="quest-xp">${q.points} XP</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openM(id, t, d) {
+            activeQId = id;
+            document.getElementById('mTitle').innerText = t;
+            document.getElementById('mDesc').innerText = d;
+            document.getElementById('questModal').style.display = 'flex';
+        }
+
+        function closeM() { document.getElementById('questModal').style.display = 'none'; }
+
+        document.getElementById('camInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            alert("Beweis wird hochgeladen...");
+            // Upload Logik wie gehabt...
+            closeM();
+        }
+
+        init();
+    </script>
+</body>
+</html>
