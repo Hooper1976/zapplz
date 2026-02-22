@@ -2,30 +2,43 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Challenge Me - Registrieren</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
-        .gradient-btn { background: linear-gradient(90deg, #eab308 0%, #f97316 100%); }
+        body { 
+            background-color: #061c14; 
+            color: white; 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at top right, #064e3b, #061c14);
+        }
+        .input-green:focus { border-color: #10b981; }
+        .gradient-green-btn { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen flex flex-col justify-center px-8">
     <div class="text-center mb-10">
-        <h1 class="text-3xl font-black italic text-yellow-500 uppercase tracking-tighter text-left mb-2">Neues Konto</h1>
-        <p class="text-slate-400 text-left text-sm">V3-SYNC Online</p>
+        <h1 class="text-3xl font-black italic text-emerald-400 uppercase tracking-tighter text-left mb-2">Join the Club</h1>
+        <p class="text-emerald-500/50 text-left text-sm uppercase font-bold tracking-widest">Werde Teil der Community</p>
     </div>
 
     <form id="regForm" class="space-y-4">
-        <input type="email" id="email" placeholder="Deine E-Mail" required class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-5 px-6 text-white font-bold outline-none">
-        <input type="password" id="password" placeholder="Wähle ein Passwort" required class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-5 px-6 text-white font-bold outline-none">
-        <button type="submit" id="regBtn" class="w-full py-5 rounded-2xl font-black text-black uppercase gradient-btn mt-4">Konto erstellen ⚡</button>
+        <div class="relative">
+            <input type="email" id="email" placeholder="Deine E-Mail" required 
+                   class="w-full bg-slate-900 border-2 border-emerald-900/50 rounded-2xl py-5 px-6 text-white font-bold outline-none input-green shadow-inner">
+        </div>
+        <div class="relative">
+            <input type="password" id="password" placeholder="Wähle ein Passwort" required 
+                   class="w-full bg-slate-900 border-2 border-emerald-900/50 rounded-2xl py-5 px-6 text-white font-bold outline-none input-green shadow-inner">
+        </div>
+        <button type="submit" id="regBtn" class="w-full py-5 rounded-2xl font-black text-white uppercase tracking-widest text-lg gradient-green-btn mt-4 shadow-xl shadow-emerald-900/20">
+            Account erstellen ⚡
+        </button>
     </form>
 
     <div class="mt-8 text-center">
-        <a href="index.html" class="text-yellow-500 font-bold text-sm underline">Zurück zum Login</a>
+        <a href="index.html" class="text-emerald-500 font-bold text-sm underline">Zurück zum Login</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -39,14 +52,16 @@
             const btn = document.getElementById('regBtn');
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            btn.innerText = "Synchronisiere...";
+            btn.innerText = "Sende Daten...";
+            btn.disabled = true;
 
             const { data, error } = await supabase.auth.signUp({ email, password });
             if (error) {
                 alert("Fehler: " + error.message);
-                btn.innerText = "Konto erstellen ⚡";
+                btn.innerText = "Account erstellen ⚡";
+                btn.disabled = false;
             } else if (data.user) {
-                alert("ERFOLG! Dein Konto unter der Projekt-ID pfvvpq... wurde erstellt!\nID: " + data.user.id);
+                alert("WILLKOMMEN!\nDein Account wurde erstellt.\nMelde dich jetzt an.");
                 window.location.href = 'index.html';
             }
         };
