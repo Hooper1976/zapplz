@@ -3,137 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge Me - Login</title>
+    <title>Challenge Me - Auth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
     <style>
-        body {
-            background-color: #0f172a;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle at top right, #1e293b, #0f172a);
-        }
-        .input-focus:focus {
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
-            border-color: #eab308;
-        }
-        .gradient-btn {
-            background: linear-gradient(90deg, #eab308 0%, #f97316 100%);
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        .input-focus:focus { box-shadow: 0 0 20px rgba(234, 179, 8, 0.2); border-color: #eab308; }
+        .gradient-btn { background: linear-gradient(90deg, #eab308 0%, #f97316 100%); }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen flex flex-col justify-center px-8">
 
-    <!-- Logo Section -->
     <div class="text-center mb-12">
-        <div class="inline-block p-4 rounded-3xl bg-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.3)] mb-6 animate-float">
+        <div class="inline-block p-4 rounded-3xl bg-yellow-500 mb-6">
             <i class="fas fa-trophy text-4xl text-black"></i>
         </div>
-        <h1 class="text-4xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600 uppercase">Challenge Me</h1>
-        <p class="text-slate-400 mt-2 font-medium">Bist du bereit für die nächste Challenge?</p>
+        <h1 class="text-4xl font-black italic text-yellow-500 uppercase">Challenge Me</h1>
     </div>
 
-    <!-- Auth Tabs -->
     <div class="bg-slate-800/50 p-1 rounded-2xl mb-8 flex border border-slate-700">
-        <button id="loginTab" class="flex-1 py-3 text-black font-black bg-yellow-500 rounded-xl transition-all">Login</button>
-        <button id="registerTab" class="flex-1 py-3 text-slate-400 font-bold hover:text-white transition-all">Registrieren</button>
+        <button id="loginTab" class="flex-1 py-3 text-black font-black bg-yellow-500 rounded-xl">Login</button>
+        <button id="registerTab" class="flex-1 py-3 text-slate-400 font-bold">Registrieren</button>
     </div>
 
-    <!-- Login Form -->
-    <form id="loginForm" class="space-y-4" action="index.html">
-        <div class="relative">
-            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-            <input type="email" placeholder="E-Mail Adresse" required
-                   class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-4 pl-12 pr-4 text-white font-bold outline-none input-focus transition-all">
-        </div>
-        <div class="relative">
-            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-            <input type="password" placeholder="Passwort" required
-                   class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-4 pl-12 pr-4 text-white font-bold outline-none input-focus transition-all">
-        </div>
-        <div class="text-right">
-            <a href="#" class="text-xs text-yellow-500 font-bold">Passwort vergessen?</a>
-        </div>
-        <button type="submit"
-                class="w-full py-5 rounded-2xl font-black text-black uppercase tracking-widest text-lg shadow-xl shadow-orange-600/20 active:scale-95 transition-transform gradient-btn mt-4">
-            Anmelden 🚀
-        </button>
+    <form id="authForm" class="space-y-4">
+        <input type="email" id="email" placeholder="E-Mail Adresse" required class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-4 px-6 text-white font-bold outline-none input-focus">
+        <input type="password" id="password" placeholder="Passwort" required class="w-full bg-slate-800 border-2 border-slate-700 rounded-2xl py-4 px-6 text-white font-bold outline-none input-focus">
+        <button type="submit" id="submitBtn" class="w-full py-5 rounded-2xl font-black text-black uppercase gradient-btn mt-4">Anmelden 🚀</button>
     </form>
 
-    <!-- Social Login -->
-    <div class="mt-12 text-center">
-        <p class="text-xs text-slate-500 font-black uppercase tracking-widest mb-6">Oder weiter mit</p>
-        <div class="flex justify-center space-x-6">
-            <button class="w-14 h-14 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center text-xl hover:border-yellow-500 transition-all">
-                <i class="fab fa-google"></i>
-            </button>
-            <button class="w-14 h-14 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center text-xl hover:border-yellow-500 transition-all">
-                <i class="fab fa-apple"></i>
-            </button>
-            <button class="w-14 h-14 bg-slate-800 rounded-2xl border border-slate-700 flex items-center justify-center text-xl hover:border-yellow-500 transition-all">
-                <i class="fab fa-facebook-f"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module">
-        import { supabaseClient } from './config.js';
-        const supabase = supabase.createClient(supabaseClient.url, supabaseClient.key);
+    <script>
+        const SUPABASE_URL = "https://rfejtxzkahelavltsidv.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZWp0eHprYWhlbGF2bHRzaWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzcyOTMsImV4cCI6MjA4NzM1MzI5M30.pmOns_VkC2XztdgLTIdb_ZvSpo6Ci0OvOhUpbgnJbgc";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const loginTab = document.getElementById('loginTab');
         const registerTab = document.getElementById('registerTab');
-        const loginForm = document.getElementById('loginForm');
-        const loginBtn = loginForm.querySelector('button[type="submit"]');
-        
+        const submitBtn = document.getElementById('submitBtn');
         let isRegister = false;
 
-        registerTab.addEventListener('click', () => {
+        registerTab.onclick = () => {
             isRegister = true;
-            registerTab.classList.add('bg-yellow-500', 'text-black');
-            registerTab.classList.remove('text-slate-400');
-            loginTab.classList.remove('bg-yellow-500', 'text-black');
-            loginTab.classList.add('text-slate-400');
-            loginBtn.innerText = 'Konto erstellen ⚡';
-        });
+            registerTab.className = 'flex-1 py-3 text-black font-black bg-yellow-500 rounded-xl';
+            loginTab.className = 'flex-1 py-3 text-slate-400 font-bold';
+            submitBtn.innerText = 'Konto erstellen ⚡';
+        };
 
-        loginTab.addEventListener('click', () => {
+        loginTab.onclick = () => {
             isRegister = false;
-            loginTab.classList.add('bg-yellow-500', 'text-black');
-            loginTab.classList.remove('text-slate-400');
-            registerTab.classList.remove('bg-yellow-500', 'text-black');
-            registerTab.classList.add('text-slate-400');
-            loginBtn.innerText = 'Anmelden 🚀';
-        });
+            loginTab.className = 'flex-1 py-3 text-black font-black bg-yellow-500 rounded-xl';
+            registerTab.className = 'flex-1 py-3 text-slate-400 font-bold';
+            submitBtn.innerText = 'Anmelden 🚀';
+        };
 
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
-            const email = loginForm.querySelector('input[type="email"]').value;
-            const password = loginForm.querySelector('input[type="password"]').value;
-
-            loginBtn.disabled = true;
-            loginBtn.innerText = 'Warte kurz...';
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Warte...";
 
             if (isRegister) {
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) alert("Fehler: " + error.message);
-                else alert("Check deine E-Mails zur Bestätigung!");
+                const { error } = await supabase.auth.signUp({ email, password });
+                if (error) alert(error.message);
+                else alert("Check deine E-Mails!");
             } else {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) alert("Login fehlgeschlagen: " + error.message);
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) alert(error.message);
                 else window.location.href = 'dashboard.html';
             }
-            loginBtn.disabled = false;
-            loginBtn.innerText = isRegister ? 'Konto erstellen ⚡' : 'Anmelden 🚀';
-        });
+            submitBtn.disabled = false;
+            submitBtn.innerText = isRegister ? 'Konto erstellen ⚡' : 'Anmelden 🚀';
+        };
     </script>
 </body>
 </html>
