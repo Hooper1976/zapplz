@@ -18,10 +18,13 @@
         .plus-btn { background: white; color: #10b981; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -35px; border: 4px solid #061c14; font-size: 28px; font-weight: bold; }
         .unread-badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; display: none; }
         
-        #questModal { position: fixed; inset: 0; background: rgba(6, 28, 20, 0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        .modal-card { background: #062d24; padding: 30px; border-radius: 25px; border: 2px solid #10b981; width: 100%; max-width: 320px; }
-        .btn-upload { background: #10b981; color: white; padding: 15px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 20px; }
-        .close-modal { color: #ef4444; margin-top: 20px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        #questModal { position: fixed; inset: 0; background: rgba(6, 28, 20, 0.98); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: flex-start; padding: 30px; text-align: center; overflow-y: auto; }
+        .modal-card { background: #062d24; padding: 25px; border-radius: 25px; border: 2px solid #10b981; width: 100%; max-width: 340px; margin-top: 20px; }
+        .btn-upload { background: #10b981; color: white; padding: 15px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .close-modal { color: #ef4444; margin-top: 25px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        
+        label { display: block; text-align: left; font-size: 10px; color: #10b981; margin: 15px 0 5px; font-weight: bold; text-transform: uppercase; }
+        textarea, select { width: 100%; padding: 12px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; font-size: 14px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -41,21 +44,44 @@
         <div id="privateList"></div>
     </div>
     
-    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">🔥 Quests:</h2>
+    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">🔥 Globale Quests:</h2>
     <div id="list">Lade Quests...</div>
 
     <div id="questModal">
         <div class="modal-card">
-            <h2 id="modalTitle" style="color:white">Titel</h2>
-            <p id="modalDesc"></p>
-            <div id="normalUpload">
-                <input type="file" id="fileInput" accept="image/*" style="display:none">
-                <button class="btn-upload" onclick="document.getElementById('fileInput').click()">FOTO MACHEN 📸</button>
-            </div>
+            <h2 id="modalTitle" style="color:white; margin:0; font-style: italic;">Titel</h2>
+            <p id="modalDesc" style="font-size: 12px; margin-top: 10px; color: #d1fae5; opacity: 0.8;"></p>
+            
+            <!-- Abschluss Bereich für Privat -->
             <div id="privateAction" style="display:none">
-                <p id="prizeDisplay" style="color:#facc15; font-weight:bold"></p>
-                <button class="btn-upload" style="background:#facc15; color:black" onclick="finishPriv()">ERLEDIGT! ✅</button>
+                <p id="prizeDisplay" style="color:#facc15; font-weight:bold; font-size: 14px; border: 1px dashed #facc15; padding: 10px; border-radius: 10px; margin-top: 15px;"></p>
+                
+                <label>Erfahrungsbericht:</label>
+                <textarea id="proofText" rows="3" placeholder="Erzähle von deinem Abenteuer..."></textarea>
+                
+                <label>Bewertung:</label>
+                <select id="starRating">
+                    <option value="5">⭐⭐⭐⭐⭐ Hammer!</option>
+                    <option value="4">⭐⭐⭐⭐ Ziemlich gut</option>
+                    <option value="3">⭐⭐⭐ War okay</option>
+                    <option value="2">⭐⭐ Nicht so meins</option>
+                    <option value="1">⭐ Langweilig</option>
+                </select>
+
+                <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none">
+                <button id="mediaBtn" class="btn-upload" onclick="document.getElementById('mediaInput').click()" style="background:#064e3b; border:1px solid #10b981; margin-top: 15px;">FOTO/VIDEO WÄHLEN 📸</button>
+                <div id="mediaStatus" style="font-size:10px; color:#facc15; margin-top: 5px;"></div>
+                <input type="hidden" id="finalMediaUrl">
+
+                <button class="btn-upload" style="background:#facc15; color:black; font-size: 16px;" onclick="finishPriv()">CHALLENGE ABSCHLIESSEN ✅</button>
             </div>
+
+            <!-- Abschluss Bereich für Global -->
+            <div id="normalUpload" style="display:none">
+                <input type="file" id="fileInput" accept="image/*" style="display:none">
+                <button class="btn-upload" onclick="document.getElementById('fileInput').click()">BEWEIS-FOTO MACHEN 📸</button>
+            </div>
+            
             <div class="close-modal" onclick="closeModal()">X ABBRECHEN</div>
         </div>
     </div>
@@ -78,7 +104,6 @@
             const { data: { session } } = await sup.auth.getSession();
             if(!session) { window.location.href='index.html'; return; }
             myId = session.user.id;
-
             const { data: prof } = await sup.from('profiles').select('username').eq('id', myId).single();
             myName = prof?.username || "";
             document.getElementById('welcome').innerText = "Yo, " + myName;
@@ -102,8 +127,8 @@
 
             // GLOBALE QUESTS LADEN
             const { data: quests } = await sup.from('challenges').select('*');
-            const list = document.getElementById('list');
             if(quests) {
+                const list = document.getElementById('list');
                 list.innerHTML = '';
                 quests.forEach(q => {
                     list.innerHTML += `
@@ -125,18 +150,39 @@
         }
 
         function openPriv(id, t, d, p, c) {
-            activePId=id; activeQId=null;
+            activePId = id; activeQId = null;
             document.getElementById('modalTitle').innerText = t;
-            document.getElementById('modalDesc').innerText = "VON: " + c + "\n\n" + d;
-            document.getElementById('prizeDisplay').innerText = "BELOHNUNG: " + p;
-            document.getElementById('normalUpload').style.display='none';
-            document.getElementById('privateAction').style.display='block';
-            document.getElementById('questModal').style.display='flex';
+            document.getElementById('modalDesc').innerText = "Herausforderung von " + c + ": " + d;
+            document.getElementById('prizeDisplay').innerText = "ZIEL / PREIS: " + p;
+            document.getElementById('proofText').value = '';
+            document.getElementById('finalMediaUrl').value = '';
+            document.getElementById('mediaStatus').innerText = '';
+            document.getElementById('normalUpload').style.display = 'none';
+            document.getElementById('privateAction').style.display = 'block';
+            document.getElementById('questModal').style.display = 'flex';
+        }
+
+        document.getElementById('mediaInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            document.getElementById('mediaStatus').innerText = "LÄDT HOCH...";
+            const fileName = `shared/${myId}_${Date.now()}.jpg`;
+            const { data, error } = await sup.storage.from('app_assets').upload(fileName, file);
+            if(error) alert("Upload Fehler: " + error.message);
+            else {
+                const { data: { publicUrl } } = sup.storage.from('app_assets').getPublicUrl(fileName);
+                document.getElementById('finalMediaUrl').value = publicUrl;
+                document.getElementById('mediaStatus').innerText = "UPLOAD FERTIG! ✅";
+            }
         }
 
         async function finishPriv() {
-            await sup.from('user_challenges').update({ status: 'completed' }).eq('id', activePId);
-            alert("STARK! Erledigt!"); location.reload();
+            const text = document.getElementById('proofText').value;
+            const media = document.getElementById('finalMediaUrl').value;
+            const star = document.getElementById('starRating').value;
+            if(!text) return alert("Bitte schreibe einen kurzen Bericht!");
+            const { error } = await sup.from('user_challenges').update({ status:'completed', proof_text:text, media_url:media, rating:parseInt(star) }).eq('id', activePId);
+            if(!error) { alert("ABGESCHLOSSEN! 🏅"); location.reload(); }
         }
 
         function closeModal() { document.getElementById('questModal').style.display='none'; }
