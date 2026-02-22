@@ -52,20 +52,23 @@
             const { data: { session } } = await sup.auth.getSession();
             if(!session) { window.location.href = 'index.html'; return; }
 
-            // Lade alle User außer mich selbst
-            const { data: users } = await sup.from('profiles').select('id, username').neq('id', session.user.id);
+            // Lade nur BESTÄTIGTE Freunde
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id).eq('status', 'accepted');
             const select = document.getElementById('targetUser');
             select.innerHTML = '<option value="">Freund wählen...</option>';
             
-            if(users) {
-                users.forEach(u => {
+            if(fships && fships.length > 0) {
+                const ids = fships.map(f => f.user_id_2);
+                const { data: profiles } = await sup.from('profiles').select('id, username').in('id', ids);
+                
+                profiles.forEach(u => {
                     const opt = document.createElement('option');
                     opt.value = u.id;
                     opt.innerText = u.username;
                     select.appendChild(opt);
                 });
             } else {
-                select.innerHTML = '<option value="">Keine anderen User gefunden</option>';
+                select.innerHTML = '<option value="">Füge erst Freunde hinzu!</option>';
             }
 
             document.getElementById('sendBtn').onclick = async () => {
@@ -73,20 +76,18 @@
                 const t = document.getElementById('title').value;
                 const d = document.getElementById('desc').value;
                 const p = document.getElementById('prize').value;
-                const status = document.getElementById('status');
+                
+                if(!target) { alert("Wähle einen Freund aus!"); return; }
+                if(!t) { alert("Gib der Challenge einen Titel!"); return; }
 
-                if(!target || !t) { alert("Bitte wähle einen Freund und einen Titel!"); return; }
-
-                status.innerText = "Sende Herausforderung...";
-                const { error } = await sup.from('user_challenges').insert([
-                    { creator_id: session.user.id, target_id: target, title: t, description: d, prize_text: p }
+                const { data, error } = await sup.from('user_challenges').insert([
+                    { creator_id: session.user.id, target_id: target, title: t, description: d, prize_text: p, status: 'pending' }
                 ]);
 
                 if(error) {
-                    alert("Fehler: " + error.message);
-                    status.innerText = "Fehler beim Senden.";
+                    alert("Datenbank-Fehler: " + error.message);
                 } else {
-                    alert("BÄM! Deine Challenge wurde an " + select.options[select.selectedIndex].text + " gesendet! 🚀");
+                    alert("BÄM! Deine Challenge wurde gesendet! 🚀");
                     window.location.href = 'dashboard.html';
                 }
             };
