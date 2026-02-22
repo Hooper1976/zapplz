@@ -7,20 +7,11 @@
     <style>
         body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; text-align: center; }
         .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 20px; }
-        .avatar-large { width: 80px; height: 80px; background: #10b981; border-radius: 25px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
         h2 { color: white; margin: 0; font-size: 20px; }
-        
-        /* Timeline Styles */
         .timeline { margin-top: 40px; text-align: left; }
         .timeline-header { font-size: 14px; font-weight: 900; text-transform: uppercase; color: #facc15; border-bottom: 1px solid #064e3b; padding-bottom: 10px; margin-bottom: 20px; }
-        .memory-card { background: #062d24; border-radius: 20px; border: 1px solid #064e3b; overflow: hidden; margin-bottom: 25px; }
-        .memory-img { width: 100%; max-height: 250px; object-fit: cover; background: #061c14; }
-        .memory-content { padding: 15px; }
-        .memory-title { color: white; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
-        .memory-text { color: #d1fae5; font-size: 13px; line-height: 1.4; opacity: 0.8; }
-        .memory-date { font-size: 10px; color: #059669; margin-top: 10px; font-weight: bold; }
-
-        .btn-edit { background: none; border: 1px solid #064e3b; color: #10b981; padding: 8px 15px; border-radius: 10px; font-size: 12px; margin-top: 10px; }
+        .memory-card { background: #062d24; border-radius: 20px; border: 2px solid #10b981; overflow: hidden; margin-bottom: 25px; }
+        .memory-img { width: 100%; display: block; background: #000; }
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
@@ -29,16 +20,13 @@
     <div style="text-align: right;"><a href="#" id="lo" style="color:#ef4444; font-size: 12px; text-decoration:none; font-weight:bold;">LOGOUT</a></div>
     
     <div class="card">
-        <div class="avatar-large" id="myAvatar">?</div>
-        <h2 id="myName">Lade...</h2>
-        <p style="font-size: 11px; color:#059669; font-weight:bold;">USER PROFIL & ARCHIV</p>
-        <button class="btn-edit" onclick="changeName()">NAME ÄNDERN ⚙️</button>
+        <h2 id="myName">Suche Profil...</h2>
+        <p style="font-size: 11px; color:#059669; font-weight:bold;">ARCHIV DER ERFOLGE</p>
     </div>
 
-    <!-- TIMELINE DER ERFOLGE -->
     <div class="timeline">
         <div class="timeline-header">🏆 MEINE ERFOLGE</div>
-        <div id="memoryList">Suche abgeschlossene Challenges...</div>
+        <div id="memoryList">Lade deine Timeline...</div>
     </div>
 
     <div class="nav">
@@ -53,17 +41,16 @@
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
         
-        async function loadArchive() {
+        async function run() {
             const { data: { session } } = await sup.auth.getSession();
             if(!session) return window.location.href = 'index.html';
 
-            const { data: myProfile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
-            const username = myProfile?.username || "Challenger";
+            const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
+            const username = profile?.username || "Ich";
             document.getElementById('myName').innerText = username;
-            document.getElementById('myAvatar').innerText = username[0].toUpperCase();
 
-            // Lade alle erledigten Challenges (Privat)
-            const { data: memories } = await sup.from('user_challenges')
+            // Lade ALLE abgeschlossenen privaten Challenges für diesen Usernamen
+            const { data: memories, error } = await sup.from('user_challenges')
                 .select('*')
                 .eq('target_name', username)
                 .eq('status', 'completed')
@@ -73,32 +60,25 @@
             if(memories && memories.length > 0) {
                 list.innerHTML = '';
                 memories.forEach(m => {
+                    const stars = m.rating ? '⭐'.repeat(m.rating) : 'Keine Bewertung';
                     list.innerHTML += `
                         <div class="memory-card">
-                            ${m.media_url ? `<img src="${m.media_url}" class="memory-img">` : ''}
-                            <div class="memory-content">
-                                <div class="memory-title">${m.title}</div>
-                                <div class="memory-text">${m.proof_text || 'Kein Bericht vorhanden.'}</div>
-                                <div class="memory-date">VON: ${m.creator_name} | ${new Date(m.created_at).toLocaleDateString('de-DE')}</div>
+                            ${m.media_url ? `<img src="${m.media_url}" class="memory-img" onerror="this.style.display='none'">` : ''}
+                            <div style="padding: 15px;">
+                                <div style="color: #facc15; font-weight: bold; font-size: 18px; margin-bottom: 5px;">${m.title}</div>
+                                <div style="color: #facc15; font-size: 14px; margin-bottom: 10px;">${stars}</div>
+                                <div style="color: white; font-size: 13px; line-height: 1.4;">${m.proof_text || 'Kein Bericht vorhanden.'}</div>
+                                <div style="color: #059669; font-size: 10px; margin-top: 15px; font-weight: bold;">Herausforderer: ${m.creator_name} | ${new Date(m.created_at).toLocaleDateString('de-DE')}</div>
                             </div>
                         </div>`;
                 });
             } else {
-                list.innerHTML = "<p style='font-size:12px; opacity:0.4; text-align:center;'>Noch keine Erinnerungen vorhanden. Schließe deine erste Challenge ab!</p>";
-            }
-        }
-
-        async function changeName() {
-            const newN = prompt("Wähle einen neuen Usernamen:");
-            if(newN) {
-                const { data: { session } } = await sup.auth.getSession();
-                await sup.from('profiles').upsert({ id: session.user.id, username: newN });
-                location.reload();
+                list.innerHTML = "<p style='font-size:12px; opacity:0.4; text-align:center;'>Noch keine abgeschlossenen Quests gefunden.</p>";
             }
         }
 
         document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href = 'index.html'; };
-        loadArchive();
+        run();
     </script>
 </body>
 </html>
