@@ -3,162 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Challenge Me - Home</title>
+    <title>Challenge Me - Dashboard</title>
     <style>
-        body { background: #061c14; color: #d1fae5; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding-bottom: 120px; }
-        header { padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(6,28,20,1), rgba(6,28,20,0)); sticky top:0; z-index:100; }
-        h1 { font-style: italic; font-size: 26px; color: #10b981; margin: 0; font-weight: 900; letter-spacing: -1px; }
+        body { 
+            background: #000 url('https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed; 
+            background-size: cover;
+            color: white; 
+            font-family: 'Arial Black', sans-serif; 
+            margin: 0; 
+            padding-bottom: 80px;
+        }
+        .overlay-dark {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: -1;
+        }
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            border-bottom: 2px solid #edff00;
+        }
+        h1 { font-style: italic; font-size: 26px; color: #edff00; margin: 0; text-shadow: 2px 2px 0px #000; }
         
-        .section-title { font-size: 14px; font-weight: 900; text-transform: uppercase; margin: 30px 20px 15px; color: #facc15; letter-spacing: 1px; }
-        
-        /* Neue Quests als Karte mit realen Bildern */
-        .quest-card { position: relative; margin: 0 20px 20px; height: 220px; border-radius: 25px; overflow: hidden; border: 1px solid rgba(16,185,129,0.2); box-shadow: 0 10px 25px rgba(0,0,0,0.3); transition: transform 0.3s; }
-        .quest-card:active { transform: scale(0.97); }
-        .quest-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65); }
-        .quest-content { position: absolute; inset: 0; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; text-align: left; }
-        .quest-title { font-size: 22px; font-weight: 900; color: white; text-transform: uppercase; font-style: italic; margin-bottom: 5px; }
-        .quest-desc { font-size: 12px; color: #d1fae5; opacity: 0.9; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .quest-footer { display: flex; justify-content: space-between; align-items: center; }
-        .quest-xp { background: #10b981; color: white; padding: 5px 12px; border-radius: 8px; font-weight: 900; font-size: 14px; }
-        
-        #unreadBadge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; }
-        .nav { position: fixed; bottom: 25px; left: 20px; right: 20px; background: #10b981; padding: 18px; border-radius: 25px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
-        .nav a { color: white; font-size: 28px; text-decoration: none; position: relative; }
-        .plus-nav { background: white; color: #10b981 !important; width: 60px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin-top: -45px; border: 5px solid #061c14; font-weight: bold; font-size: 32px; }
+        .quest-card { 
+            position: relative; margin: 20px; border-radius: 20px; overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 2px solid rgba(237,255,0,0.3);
+            height: 250px;
+        }
+        .quest-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-info { 
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            text-align: left;
+        }
+        .xp-label { background: #edff00; color: #000; padding: 5px 15px; border-radius: 5px; font-weight: 900; float: right; }
 
-        /* Modal fixes */
-        #questModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .modal-card { background: #062d24; border-radius: 30px; border: 2px solid #10b981; width:100%; max-width: 360px; overflow: hidden; }
-        .modal-body { padding: 25px; text-align: center; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+        /* REALISTISCHES MENÜ UNTEN */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
+            background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; align-items: center;
+            border-top: 2px solid #edff00; z-index: 1000;
+        }
+        .nav-item { width: 45px; height: 45px; border-radius: 12px; background-size: cover; background-position: center; border: 1px solid #edff00; }
+        .nav-home { background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=100&q=80'); }
+        .nav-rewards { background-image: url('https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=100&q=80'); }
+        .nav-plus { width: 60px; height: 60px; margin-top: -40px; border-radius: 50%; border: 3px solid #edff00; background-image: url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=100&q=80'); box-shadow: 0 0 20px #edff00; }
+        .nav-friends { background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=100&q=80'); }
+        .nav-profile { background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80'); }
     </style>
 </head>
 <body>
+    <div class="overlay-dark"></div>
     <header>
         <h1>CHALLENGE ME</h1>
-        <div style="display:flex; align-items:center; gap:15px;">
-            <a href="chat.html" style="position:relative; text-decoration:none; font-size:26px;">💬<span id="unreadCount" style="display:none" class="unread-badge">0</span></a>
-            <a href="index.html" onclick="supabase.auth.signOut()" style="color:#ef4444; font-weight:bold; font-size:12px; text-decoration:none;">LOGOUT</a>
-        </div>
+        <a href="chat.html" style="text-decoration:none; font-size:30px">📸</a>
     </header>
 
-    <div id="welcome" style="margin: 0 20px; font-weight: 900; font-size: 14px; opacity:0.6;">LÄDT...</div>
-
-    <!-- Private Duelle (Bilder-Modus) -->
-    <div id="privateSec" style="display:none">
-        <div class="section-title">⚔️ Deine Duelle</div>
-        <div id="privateList"></div>
-    </div>
-    
-    <div class="section-title">🔥 Globale Quests</div>
-    <div id="list"></div>
-
-    <!-- Modal -->
-    <div id="questModal">
-        <div class="modal-card">
-            <img id="modalImg" src="" style="width:100%; height:180px; object-fit:cover; display:none;">
-            <div class="modal-body">
-                <h2 id="modalTitle" style="color:white; margin:0 0 10px;"></h2>
-                <p id="modalDesc" style="font-size:14px; color:#d1fae5; line-height:1.4;"></p>
-                
-                <div id="privateUI" style="display:none">
-                     <p id="prizeDisplay" style="color:#facc15; font-weight:bold; margin:20px 0; font-size:14px;"></p>
-                     <textarea id="pText" placeholder="Dein Erfahrungsbericht..." style="width:100%; background:#061c14; border:1px solid #10b981; color:white; padding:10px; border-radius:10px; margin-bottom:10px;"></textarea>
-                     <button class="btn-action" style="background:#10b981; color:white" onclick="finishP()">FERTIG ✅</button>
-                </div>
-
-                <div id="globalUI" style="display:none">
-                    <button class="btn-action" style="background:#10b981; color:white" onclick="alert('Kamera-Upload startet...')">BEWEIS-FOTO 📸</button>
-                </div>
-                
-                <p onclick="closeM()" style="color:#ef4444; margin-top:20px; font-size:12px; cursor:pointer; font-weight:bold;">ZURÜCK</p>
-            </div>
+    <div class="quest-card">
+        <img src="https://images.unsplash.com/photo-1533107862482-0e6974b06ec4?auto=format&fit=crop&w=600&q=80" class="quest-img">
+        <div class="card-info">
+            <span class="xp-label">500 XP</span>
+            <div style="font-size:20px; font-weight:900">EISBADEN</div>
+            <p style="font-size:12px; margin:5px 0 0; opacity:0.8">Spring ins kalte Wasser!</p>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="nav">
-        <a href="dashboard.html">🏠</a>
-        <a href="rewards.html">🎁</a>
-        <a href="create_challenge.html" class="plus-nav">+</a>
-        <a href="friends.html">👥</a>
-        <a href="profile.html">👤</a>
-    </div>
-
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script>
-        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
-        let myU, myN, actId;
-
-        async function init() {
-            const { data: { session } } = await sup.auth.getSession();
-            if(!session) { window.location.href='index.html'; return; }
-            myU = session.user.id;
-            const { data: prof } = await sup.from('profiles').select('username').eq('id', myU).single();
-            myN = prof?.username || "";
-            document.getElementById('welcome').innerText = "YO, " + myN;
-
-            // Quests laden
-            const { data: q } = await sup.from('challenges').select('*');
-            const list = document.getElementById('list');
-            list.innerHTML = q.map(task => `
-                <div class="quest-card" onclick="openM('${task.id}','${task.title}','${task.description}','global','${task.image_url || 'https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=600&q=80'}')">
-                    <img src="${task.image_url || 'https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=600&q=80'}" class="quest-img">
-                    <div class="quest-content">
-                        <div class="quest-title">${task.title}</div>
-                        <div class="quest-desc">${task.description}</div>
-                        <div class="quest-footer">
-                            <span class="quest-xp">${task.points} XP</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            // Duelle laden
-            if(myN) {
-                const { data: d } = await sup.from('user_challenges').select('*').eq('target_name', myN).eq('status', 'pending');
-                if(d.length > 0) {
-                    document.getElementById('privateSec').style.display='block';
-                    document.getElementById('privateList').innerHTML = d.map(duel => `
-                        <div class="quest-card" style="height:150px; border-color:#facc15" onclick="openM('${duel.id}','${duel.title}','${duel.description}','private','','${duel.prize_text}','${duel.creator_name}')">
-                            <img src="https://images.unsplash.com/photo-1528605248644-14dd04cb113d?auto=format&fit=crop&w=600&q=80" class="quest-img">
-                            <div class="quest-content">
-                                <div class="quest-title" style="color:#facc15">${duel.title}</div>
-                                <div class="quest-desc">Duell von ${duel.creator_name}</div>
-                            </div>
-                        </div>`).join('');
-                }
-            }
-        }
-
-        function openM(id, t, mask, typ, img, prz, sender) {
-            actId = id;
-            document.getElementById('modalTitle').innerText = t;
-            document.getElementById('modalDesc').innerText = mask;
-            const mImg = document.getElementById('modalImg');
-            if(img) { mImg.src=img; mImg.style.display='block'; } else { mImg.style.display='none'; }
-            
-            if(typ === 'private') {
-                document.getElementById('privateUI').style.display='block';
-                document.getElementById('globalUI').style.display='none';
-                document.getElementById('prizeDisplay').innerText = "BELOHNUNG: " + prz;
-            } else {
-                document.getElementById('globalUI').style.display='block';
-                document.getElementById('privateUI').style.display='none';
-            }
-            document.getElementById('questModal').style.display='flex';
-        }
-
-        function closeM() { document.getElementById('questModal').style.display='none'; }
-
-        async function finishP() {
-            const txt = document.getElementById('pText').value;
-            if(!txt) return alert("Bericht fehlt!");
-            await sup.from('user_challenges').update({ status:'completed', proof_text:txt }).eq('id', actId);
-            location.reload();
-        }
-
-        init();
-    </script>
+    <!-- Menü mit Realgrafiken -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item nav-home"></a>
+        <a href="rewards.html" class="nav-item nav-rewards"></a>
+        <a href="create_challenge.html" class="nav-item nav-plus"></a>
+        <a href="friends.html" class="nav-item nav-friends"></a>
+        <a href="profile.html" class="nav-item nav-profile"></a>
+    </nav>
 </body>
 </html>
