@@ -3,60 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Challenge erstellen - Challenge Me</title>
+    <title>Challenge erstellen - Multi-User</title>
     <style>
-        body { background: #061c14; color: #10b981; font-family: sans-serif; padding: 20px; text-align: center; }
-        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 20px; }
-        input, select, textarea { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #064e3b; background: #061c14; color: white; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; }
+        body { background: #061c14; color: #10b981; font-family: sans-serif; padding: 20px; padding-bottom: 100px; }
+        h1 { font-style: italic; font-size: 24px; color: #10b981; text-transform: uppercase; margin-bottom: 20px; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 10px; }
+        label { display: block; text-align: left; font-size: 12px; font-weight: bold; margin: 15px 0 5px; color: #059669; }
+        input, textarea { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; font-size: 16px; box-sizing: border-box; }
+        
+        /* Multi-Select Styles */
+        .friend-chip { display: inline-block; padding: 8px 15px; background: #064e3b; border-radius: 20px; margin: 5px; font-size: 12px; cursor: pointer; color: white; border: 1px solid transparent; }
+        .friend-chip.selected { background: #10b981; border-color: white; font-weight: bold; }
+        
+        .btn-send { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; margin-top: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <h1>CHALLENGE SENDEN</h1>
+    <h1>Multi-Challenge ⚔️</h1>
+
     <div class="card">
-        <select id="targetName"><option>Lade Freunde...</option></select>
-        <input type="text" id="title" placeholder="Titel der Challenge">
-        <textarea id="desc" rows="3" placeholder="Beschreibung der Aufgabe"></textarea>
-        <input type="text" id="prize" placeholder="Preis für den Gewinner">
-        <button id="sendBtn">JETZT SENDEN 🚀</button>
+        <label>Wen forderst du heraus? (Mehrere möglich)</label>
+        <div id="friendSelector" style="text-align: left; background: #061c14; padding: 10px; border-radius: 12px; border: 1px solid #064e3b; min-height: 50px;">
+            Lade Freunde...
+        </div>
+
+        <label>Titel der Challenge</label>
+        <input type="text" id="title" placeholder="z.B. Das ultimative Wander-WE">
+
+        <label>Details / Aufgabenliste</label>
+        <textarea id="desc" rows="4" placeholder="Beschreibe die Aufgabe oder die Serie von Quests..."></textarea>
+
+        <label>Der Preis / Belohnung</label>
+        <input type="text" id="prize" placeholder="z.B. Der Verlierer zahlt die Hütte">
+
+        <button id="sendBtn" class="btn-send">Herausforderung senden 🚀</button>
     </div>
-    <p><a href="dashboard.html" style="color:#10b981; text-decoration:none; font-size:12px;">ZURÜCK</a></p>
+
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
+        <a href="friends.html">👥</a>
+        <a href="profile.html">👤</a>
+    </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        let selectedFriends = [];
         let myName = "";
 
         async function init() {
             const { data: { session } } = await sup.auth.getSession();
+            if(!session) return window.location.href = 'index.html';
+            
             const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
             myName = profile.username;
 
-            const { data: friends } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id).eq('status', 'accepted');
-            const sel = document.getElementById('targetName');
-            sel.innerHTML = '<option value="">Wähle einen Freund</option>';
-            if(friends) {
-                for(const f of friends) {
-                    const { data: p } = await sup.from('profiles').select('username').eq('id', f.user_id_2).single();
-                    if(p) sel.innerHTML += `<option value="${p.username}">${p.username}</option>`;
-                }
+            // Freunde laden
+            const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id).eq('status', 'accepted');
+            const selector = document.getElementById('friendSelector');
+            selector.innerHTML = '';
+
+            if(fships && fships.length > 0) {
+                const ids = fships.map(f => f.user_id_2);
+                const { data: profiles } = await sup.from('profiles').select('username').in('id', ids);
+                
+                profiles.forEach(p => {
+                    const chip = document.createElement('div');
+                    chip.className = 'friend-chip';
+                    chip.innerText = p.username;
+                    chip.onclick = () => {
+                        if(selectedFriends.includes(p.username)) {
+                            selectedFriends = selectedFriends.filter(f => f !== p.username);
+                            chip.classList.remove('selected');
+                        } else {
+                            selectedFriends.push(p.username);
+                            chip.classList.add('selected');
+                        }
+                    };
+                    selector.appendChild(chip);
+                });
+            } else {
+                selector.innerHTML = "<p style='font-size:11px; opacity:0.5; margin:0'>Füge erst Freunde hinzu!</p>";
             }
 
             document.getElementById('sendBtn').onclick = async () => {
-                const target = sel.value;
                 const t = document.getElementById('title').value;
                 const d = document.getElementById('desc').value;
                 const p = document.getElementById('prize').value;
-                
-                if(!target || !t) return alert("Freund und Titel fehlen!");
 
-                const { error } = await sup.from('user_challenges').insert([
-                    { creator_name: myName, target_name: target, title: t, description: d, prize_text: p }
-                ]);
+                if(selectedFriends.length === 0 || !t) return alert("Wähle Freunde und einen Titel!");
 
+                // Für jeden ausgewählten Freund einen Eintrag erstellen
+                const insertData = selectedFriends.map(targetName => ({
+                    creator_name: myName,
+                    target_name: targetName,
+                    title: t,
+                    description: d,
+                    prize_text: p,
+                    status: 'pending'
+                }));
+
+                const { error } = await sup.from('user_challenges').insert(insertData);
                 if(error) alert("Fehler: " + error.message);
-                else { alert("ERFOLG! Challenge an " + target + " gesendet!"); window.location.href='dashboard.html'; }
-            }
+                else {
+                    alert("GEIL! Challenge an " + selectedFriends.length + " Freunde gesendet! 🚀");
+                    window.location.href = 'dashboard.html';
+                }
+            };
         }
         init();
     </script>
