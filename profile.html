@@ -6,33 +6,58 @@
     <title>Mein Archiv - Challenge Me</title>
     <style>
         body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; text-align: center; }
-        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 20px; }
-        h2 { color: white; margin: 0; font-size: 20px; }
-        .timeline { margin-top: 40px; text-align: left; }
-        .timeline-header { font-size: 14px; font-weight: 900; text-transform: uppercase; color: #facc15; border-bottom: 1px solid #064e3b; padding-bottom: 10px; margin-bottom: 20px; }
-        .memory-card { background: #062d24; border-radius: 20px; border: 2px solid #10b981; overflow: hidden; margin-bottom: 25px; }
-        .memory-img { width: 100%; display: block; background: #000; }
+        .card { background: #062d24; padding: 15px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 20px; }
+        h2 { color: white; margin: 0; font-size: 18px; }
+        
+        /* Galerie Ansicht */
+        .gallery { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 20px; }
+        .thumb { position: relative; width: 100%; aspect-ratio: 1/1; background: #062d24; border-radius: 5px; overflow: hidden; cursor: pointer; border: 1px solid #064e3b; }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-multi { position: absolute; top: 5px; right: 5px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 4px; }
+
+        /* Detail Overlay */
+        #detailOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; flex-direction: column; overflow-y: auto; padding: 20px; }
+        .detail-card { background: #062d24; border-radius: 25px; border: 1px solid #10b981; width: 100%; max-width: 400px; margin: auto; overflow: hidden; }
+        .media-scroller { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #000; }
+        .media-item { min-width: 100%; scroll-snap-align: start; }
+        .media-item img, .media-item video { width: 100%; display: block; }
+        
+        .detail-info { padding: 20px; text-align: left; }
+        .close-btn { position: fixed; top: 20px; right: 20px; font-size: 30px; color: white; z-index: 3100; cursor: pointer; }
+
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
         .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
 <body>
-    <div style="text-align: right;"><a href="#" id="lo" style="color:#ef4444; font-size: 12px; text-decoration:none; font-weight:bold;">LOGOUT</a></div>
-    
-    <div class="card">
-        <h2 id="myName">Suche Profil...</h2>
-        <p style="font-size: 11px; color:#059669; font-weight:bold;">ARCHIV DER ERFOLGE</p>
+    <div class="close-btn" id="closeDetail" onclick="hideDetail()">✕</div>
+
+    <header class="card">
+        <h2 id="myName">Lade...</h2>
+        <p style="font-size: 10px; color:#059669; font-weight:bold; text-transform:uppercase; margin:5px 0 0;">Mediathek der Erfolge</p>
+    </header>
+
+    <div class="gallery" id="galleryGrid">
+        <!-- Kacheln kommen hier rein -->
     </div>
 
-    <div class="timeline">
-        <div class="timeline-header">🏆 MEINE ERFOLGE</div>
-        <div id="memoryList">Lade deine Timeline...</div>
+    <!-- Detail Ansicht (Modal) -->
+    <div id="detailOverlay">
+        <div class="detail-card">
+            <div class="media-scroller" id="detailMedia"></div>
+            <div class="detail-info">
+                <h2 id="detTitle" style="color: #facc15; margin-bottom: 5px;">Link Name</h2>
+                <div id="detStars" style="margin-bottom: 15px;"></div>
+                <p id="detText" style="color: white; font-size: 14px; line-height: 1.5;"></p>
+                <p id="detMeta" style="color: #059669; font-size: 10px; margin-top: 20px; font-weight: bold;"></p>
+            </div>
+        </div>
     </div>
 
     <div class="nav">
         <a href="dashboard.html">🏠</a>
         <a href="rewards.html">🎁</a>
-        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14;">+</a>
         <a href="friends.html">👥</a>
         <a href="profile.html">👤</a>
     </div>
@@ -41,44 +66,62 @@
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
         
-        async function run() {
+        async function loadArchive() {
             const { data: { session } } = await sup.auth.getSession();
             if(!session) return window.location.href = 'index.html';
+            const { data: prof } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
+            document.getElementById('myName').innerText = prof?.username || "Ich";
 
-            const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
-            const username = profile?.username || "Ich";
-            document.getElementById('myName').innerText = username;
+            const { data: memories } = await sup.from('user_challenges').select('*').eq('target_name', prof.username).eq('status', 'completed').order('created_at', { ascending: false });
 
-            // Lade ALLE abgeschlossenen privaten Challenges für diesen Usernamen
-            const { data: memories, error } = await sup.from('user_challenges')
-                .select('*')
-                .eq('target_name', username)
-                .eq('status', 'completed')
-                .order('created_at', { ascending: false });
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            if(!memories || memories.length === 0) { grid.innerHTML = "<p style='grid-column: 1/4; opacity:0.5'>Noch keine Siege.</p>"; return; }
 
-            const list = document.getElementById('memoryList');
-            if(memories && memories.length > 0) {
-                list.innerHTML = '';
-                memories.forEach(m => {
-                    const stars = m.rating ? '⭐'.repeat(m.rating) : 'Keine Bewertung';
-                    list.innerHTML += `
-                        <div class="memory-card">
-                            ${m.media_url ? `<img src="${m.media_url}" class="memory-img" onerror="this.style.display='none'">` : ''}
-                            <div style="padding: 15px;">
-                                <div style="color: #facc15; font-weight: bold; font-size: 18px; margin-bottom: 5px;">${m.title}</div>
-                                <div style="color: #facc15; font-size: 14px; margin-bottom: 10px;">${stars}</div>
-                                <div style="color: white; font-size: 13px; line-height: 1.4;">${m.proof_text || 'Kein Bericht vorhanden.'}</div>
-                                <div style="color: #059669; font-size: 10px; margin-top: 15px; font-weight: bold;">Herausforderer: ${m.creator_name} | ${new Date(m.created_at).toLocaleDateString('de-DE')}</div>
-                            </div>
-                        </div>`;
-                });
-            } else {
-                list.innerHTML = "<p style='font-size:12px; opacity:0.4; text-align:center;'>Noch keine abgeschlossenen Quests gefunden.</p>";
-            }
+            memories.forEach((m, idx) => {
+                const mediaEntries = m.media_url ? m.media_url.split(',') : [];
+                const mainImg = mediaEntries[0] || 'https://via.placeholder.com/150?text=Quest';
+                
+                const tile = document.createElement('div');
+                tile.className = 'thumb';
+                tile.innerHTML = `<img src="${mainImg}">${mediaEntries.length > 1 ? '<span class="thumb-multi">📁 '+mediaEntries.length+'</span>' : ''}`;
+                tile.onclick = () => showDetail(m);
+                grid.appendChild(tile);
+            });
         }
 
-        document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href = 'index.html'; };
-        run();
+        function showDetail(m) {
+            const overlay = document.getElementById('detailOverlay');
+            const mediaDiv = document.getElementById('detailMedia');
+            mediaDiv.innerHTML = '';
+            
+            const mediaEntries = m.media_url ? m.media_url.split(',') : [];
+            mediaEntries.forEach(url => {
+                const item = document.createElement('div');
+                item.className = 'media-item';
+                if(url.includes('.mp4') || url.includes('video')) {
+                    item.innerHTML = `<video src="${url}" controls playsinline></video>`;
+                } else {
+                    item.innerHTML = `<img src="${url}">`;
+                }
+                mediaDiv.appendChild(item);
+            });
+
+            document.getElementById('detTitle').innerText = m.title;
+            document.getElementById('detStars').innerText = '⭐'.repeat(m.rating || 0);
+            document.getElementById('detText').innerText = m.proof_text || "";
+            document.getElementById('detMeta').innerText = "VON: " + m.creator_name + " | " + new Date(m.created_at).toLocaleDateString('de-DE');
+            
+            overlay.style.display = 'flex';
+            document.getElementById('closeDetail').style.display = 'block';
+        }
+
+        function hideDetail() { 
+            document.getElementById('detailOverlay').style.display = 'none'; 
+            document.getElementById('closeDetail').style.display = 'none';
+        }
+
+        loadArchive();
     </script>
 </body>
 </html>
