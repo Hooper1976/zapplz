@@ -2,46 +2,110 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge Me - Chat</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat - Challenge Me</title>
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        body { background: #061c14; color: #10b981; font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 20px; background: #062d24; border-bottom: 1px solid #064e3b; text-align: center; }
+        h1 { font-style: italic; font-size: 20px; margin: 0; }
+        .chat-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 80%; padding: 12px 15px; border-radius: 15px; font-size: 14px; line-height: 1.4; }
+        .msg.me { align-self: flex-end; background: #10b981; color: white; border-bottom-right-radius: 2px; }
+        .msg.them { align-self: flex-start; background: #064e3b; color: #d1fae5; border-bottom-left-radius: 2px; }
+        
+        .input-area { padding: 15px; background: #062d24; border-top: 1px solid #064e3b; display: flex; gap: 10px; padding-bottom: 100px; }
+        input { flex: 1; padding: 12px; background: #061c14; border: 1px solid #064e3b; border-radius: 10px; color: white; outline: none; }
+        .send-btn { width: 50px; height: 45px; background: #10b981; border: none; border-radius: 10px; color: white; font-weight: bold; }
+        
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col">
-    <header class="p-6 bg-slate-900 border-b border-slate-800 sticky top-0 z-10">
-        <h1 class="text-2xl font-black italic tracking-tighter text-yellow-500 uppercase">Chat</h1>
+<body>
+    <header>
+        <h1 id="chatTitle">Messenger</h1>
+        <select id="friendSelect" style="background:#061c14; color:#10b981; border:none; margin-top:10px; font-size:12px;">
+            <option value="">Wähle einen Freund...</option>
+        </select>
     </header>
-    
-    <main class="flex-1 p-6 flex flex-col items-center justify-center text-center space-y-4">
-        <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center text-3xl">💬</div>
-        <h2 class="text-xl font-bold">Deine Chats kommen bald!</h2>
-        <p class="text-slate-400 text-sm">Hier kannst du dich bald mit deinen Freunden zu Challenges verabreden.</p>
-    </main>
 
-    <!-- Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 px-8 py-4 flex justify-between items-center bg-slate-900/95 backdrop-blur-xl">
-        <a href="index.html" class="text-slate-500 flex flex-col items-center">
-            <i class="fas fa-th-large text-xl"></i>
-            <span class="text-[10px] mt-1">Home</span>
-        </a>
-        <a href="ranking.html" class="text-slate-500 flex flex-col items-center">
-            <i class="fas fa-trophy text-xl"></i>
-            <span class="text-[10px] mt-1">Ranking</span>
-        </a>
-        <a href="create_challenge.html" class="bg-yellow-500 text-black w-12 h-12 rounded-full flex items-center justify-center -mt-10 border-4 border-slate-900 shadow-lg">
-            <i class="fas fa-plus text-xl"></i>
-        </a>
-        <a href="chat.html" class="text-yellow-500 flex flex-col items-center">
-            <i class="fas fa-comment text-xl"></i>
-            <span class="text-[10px] mt-1">Chat</span>
-        </a>
-        <button class="text-slate-500 flex flex-col items-center">
-            <i class="fas fa-users text-xl"></i>
-            <span class="text-[10px] mt-1">Freunde</span>
-        </button>
-    </nav>
+    <div class="chat-area" id="chatList">
+        <div style="text-align:center; opacity:0.5; margin-top:50px;">Wähle einen Chatpartner aus...</div>
+    </div>
+
+    <form class="input-area" id="chatForm">
+        <input type="text" id="msgText" placeholder="Nachricht schreiben..." required>
+        <button type="submit" class="send-btn">🚀</button>
+    </form>
+
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:50px; height:50px; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14;">+</a>
+        <a href="friends.html">👥</a>
+        <a href="chat.html">💬</a>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        let myId, targetId;
+
+        async function init() {
+            const { data: { session } } = await sup.auth.getSession();
+            if(!session) return window.location.href = 'index.html';
+            myId = session.user.id;
+
+            // Freunde laden
+            const { data: friends } = await sup.from('friendships').select('user_id_2, profiles!friendships_user_id_2_fkey(username)').eq('user_id_1', myId);
+            const sel = document.getElementById('friendSelect');
+            friends.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.user_id_2;
+                opt.innerText = f.profiles.username;
+                sel.appendChild(opt);
+            });
+
+            sel.onchange = () => { targetId = sel.value; loadMsgs(); };
+            
+            // Realtime Abo für Nachrichten
+            sup.channel('custom-all-channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                if(payload.new.sender_id === targetId || payload.new.receiver_id === targetId) loadMsgs();
+            }).subscribe();
+        }
+
+        async function loadMsgs() {
+            if(!targetId) return;
+            const { data: msgs } = await sup.from('messages')
+                .select('*')
+                .or(`and(sender_id.eq.${myId},receiver_id.eq.${targetId}),and(sender_id.eq.${targetId},receiver_id.eq.${myId})`)
+                .order('created_at', { ascending: true });
+            
+            const list = document.getElementById('chatList');
+            list.innerHTML = '';
+            msgs.forEach(m => {
+                const div = document.createElement('div');
+                div.className = m.sender_id === myId ? 'msg me' : 'msg them';
+                div.innerText = m.content;
+                list.appendChild(div);
+            });
+            list.scrollTop = list.scrollHeight;
+        }
+
+        document.getElementById('chatForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('msgText');
+            if(!targetId || !text.value) return;
+
+            const { error } = await sup.from('messages').insert([
+                { sender_id: myId, receiver_id: targetId, content: text.value }
+            ]);
+            if(!error) text.value = '';
+            loadMsgs();
+        }
+
+        init();
+    </script>
 </body>
 </html>
