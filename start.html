@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>START - Challenge Me</title>
+</head>
+<body style="background: #061c14; color: white; padding: 30px; font-family: sans-serif; text-align: center;">
+    <h1 style="color: #10b981;">NEUER START</h1>
+    <p style="color: #059669;">Projekt: pfvvpqljjfmyvtyiuibh</p>
+
+    <div style="margin-top: 30px; background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #10b981;">
+        <input type="email" id="e" placeholder="E-Mail" style="width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: none; font-size: 16px;">
+        <input type="password" id="p" placeholder="Passwort" style="width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: none; font-size: 16px;">
+        <button id="btn" style="width: 100%; padding: 15px; background: #10b981; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px;">
+            JETZT REGISTRIEREN ⚡
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        document.getElementById('btn').onclick = async () => {
+            const btn = document.getElementById('btn');
+            btn.innerText = "Sende...";
+            btn.style.background = "grey";
+
+            try {
+                const S_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+                const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
+                const supabase = window.supabase.createClient(S_URL, S_KEY);
+                
+                const { data, error } = await supabase.auth.signUp({
+                    email: document.getElementById('e').value,
+                    password: document.getElementById('p').value
+                });
+
+                if (error) {
+                    alert("FEHLER: " + error.message);
+                } else {
+                    alert("ERFOLG! Dein User wurde angelegt.\nID: " + data.user.id);
+                }
+            } catch (err) {
+                alert("CRASH: " + err.message);
+            }
+            btn.innerText = "JETZT REGISTRIEREN ⚡";
+            btn.style.background = "#10b981";
+        };
+    </script>
+</body>
+</html>
