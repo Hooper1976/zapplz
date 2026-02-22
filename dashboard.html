@@ -9,51 +9,54 @@
         h1 { font-style: italic; font-size: 24px; color: #10b981; margin: 0; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #064e3b; padding-bottom: 15px; }
         .logout { color: #059669; text-decoration: none; font-size: 11px; font-weight: bold; border: 1px solid #064e3b; padding: 5px 8px; border-radius: 8px; }
-        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .card:active { transform: scale(0.98); background: #063d34; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .card h3 { margin: 0; font-size: 18px; color: white; }
         .card p { margin: 5px 0 0; font-size: 12px; color: #10b981; opacity: 0.7; }
         .pts { font-weight: 900; color: #10b981; font-size: 20px; }
-        
-        /* Modal für Challenge Abschluss */
-        #questModal { position: fixed; inset: 0; background: rgba(6, 28, 20, 0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        .modal-card { background: #062d24; padding: 30px; border-radius: 25px; border: 2px solid #10b981; width: 100%; max-width: 320px; }
-        .btn-upload { background: #10b981; color: white; padding: 15px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 20px; }
-        .close-modal { color: #ef4444; margin-top: 20px; font-size: 14px; font-weight: bold; cursor: pointer; }
-
         .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .nav a { color: white; font-size: 24px; text-decoration: none; position: relative; }
         .plus-btn { background: white; color: #10b981; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -35px; border: 4px solid #061c14; font-size: 28px; font-weight: bold; }
         .unread-badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; display: none; }
+        
+        #questModal { position: fixed; inset: 0; background: rgba(6, 28, 20, 0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .modal-card { background: #062d24; padding: 30px; border-radius: 25px; border: 2px solid #10b981; width: 100%; max-width: 320px; }
+        .btn-upload { background: #10b981; color: white; padding: 15px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 20px; }
+        .close-modal { color: #ef4444; margin-top: 20px; font-size: 14px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <header>
         <h1>CHALLENGE ME</h1>
         <div style="display:flex; align-items:center; gap:15px;">
-            <a href="chat.html" style="position:relative; text-decoration:none; font-size:24px;">
-                💬
-                <span id="unreadCount" class="unread-badge">0</span>
-            </a>
+            <a href="chat.html" style="position:relative; text-decoration:none; font-size:24px;">💬<span id="unreadCount" class="unread-badge">0</span></a>
             <a href="#" id="lo" class="logout">LOGOUT</a>
         </div>
     </header>
 
-    <div id="user" style="font-weight:bold; font-size:14px">Lade...</div>
-    
-    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">🔥 Quests für dich:</h2>
-    <div id="list">Suche...</div>
+    <div id="welcome" style="font-weight:bold; font-size:14px">Warte...</div>
 
-    <!-- Modal für Upload -->
+    <!-- PRIVATE DUELLE -->
+    <div id="privateSec" style="display:none; margin-top: 25px;">
+        <h2 style="font-size: 14px; text-transform: uppercase; color: #facc15;">📩 Duelle von Freunden:</h2>
+        <div id="privateList"></div>
+    </div>
+    
+    <h2 style="font-size: 14px; margin-top: 30px; text-transform: uppercase;">🔥 Quests:</h2>
+    <div id="list">Lade Quests...</div>
+
     <div id="questModal">
         <div class="modal-card">
-            <h2 id="modalTitle" style="color:white; margin:0;">Titel</h2>
-            <p id="modalDesc" style="font-size:12px; margin-top:10px;">Beschreibung...</p>
-            <div id="uploadStatus" style="font-size:10px; margin-top:10px; color:#facc15"></div>
-            
-            <input type="file" id="fileInput" accept="image/*" style="display:none">
-            <button class="btn-upload" onclick="document.getElementById('fileInput').click()">FOTO / BEWEIS MACHEN 📸</button>
-            <div class="close-modal" onclick="closeModal()">ABBRECHEN</div>
+            <h2 id="modalTitle" style="color:white">Titel</h2>
+            <p id="modalDesc"></p>
+            <div id="normalUpload">
+                <input type="file" id="fileInput" accept="image/*" style="display:none">
+                <button class="btn-upload" onclick="document.getElementById('fileInput').click()">FOTO MACHEN 📸</button>
+            </div>
+            <div id="privateAction" style="display:none">
+                <p id="prizeDisplay" style="color:#facc15; font-weight:bold"></p>
+                <button class="btn-upload" style="background:#facc15; color:black" onclick="finishPriv()">ERLEDIGT! ✅</button>
+            </div>
+            <div class="close-modal" onclick="closeModal()">X ABBRECHEN</div>
         </div>
     </div>
 
@@ -69,126 +72,75 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
-        let activeQuestId = null;
-        let myId = null;
-        let activePrivateId = null;
+        let myName, myId, activeQId, activePId;
 
         async function run() {
             const { data: { session } } = await sup.auth.getSession();
-            if(!session) { window.location.href = 'index.html'; return; }
+            if(!session) { window.location.href='index.html'; return; }
             myId = session.user.id;
-            
-            const { data: profile } = await sup.from('profiles').select('username').eq('id', myId).single();
-            document.getElementById('user').innerText = "Yo, " + (profile?.username || session.user.email.split('@')[0]);
 
-            // UNREAD MESSAGES CHECK
-            const { count: unread } = await sup.from('messages').select('*', { count: 'exact', head: true }).eq('receiver_id', myId).eq('is_read', false);
-            if(unread > 0) { document.getElementById('unreadBadge').innerText = unread; document.getElementById('unreadBadge').style.display='block'; }
+            const { data: prof } = await sup.from('profiles').select('username').eq('id', myId).single();
+            myName = prof?.username || "";
+            document.getElementById('welcome').innerText = "Yo, " + myName;
 
-            // LADE PRIVATE DUELLE (ROBUSTER LADEPfad)
-            const { data: privates, error: privError } = await sup.from('user_challenges')
-                .select('*')
-                .eq('target_id', myId)
-                .eq('status', 'pending');
-            
-            if(privates && privates.length > 0) {
-                const pSection = document.getElementById('privateSection');
-                const pList = document.getElementById('privateList');
-                pSection.style.display = 'block';
-                pList.innerHTML = '';
-                
-                for(const p of privates) {
-                    // Hole den Namen des Herausforderers separat
-                    const { data: creator } = await sup.from('profiles').select('username').eq('id', p.creator_id).single();
-                    const senderName = creator ? creator.username : 'Ein Freund';
-
-                    pList.innerHTML += `
-                        <div class="card" style="border-color: #facc15;" onclick="openPrivate('${p.id}', '${p.title}', '${p.description}', '${p.prize_text}', '${senderName}')">
-                            <div>
-                                <h3 style="color:#facc15">${p.title}</h3>
-                                <p>Herausforderer: ${senderName}</p>
-                                <p style="font-size:10px; color:#facc15; font-weight:bold">🎁 PREIS: ${p.prize_text}</p>
-                            </div>
-                            <div class="pts">⚔️</div>
-                        </div>`;
+            // PRIVATE DUELLE LADEN
+            if(myName) {
+                const { data: privs } = await sup.from('user_challenges').select('*').eq('target_name', myName).eq('status', 'pending');
+                if(privs && privs.length > 0) {
+                    document.getElementById('privateSec').style.display = 'block';
+                    const plist = document.getElementById('privateList');
+                    plist.innerHTML = '';
+                    privs.forEach(p => {
+                        plist.innerHTML += `
+                            <div class="card" style="border: 2px solid #facc15; background:#1e1b01" onclick="openPriv('${p.id}','${p.title}','${p.description}','${p.prize_text}','${p.creator_name}')">
+                                <div><h3 style="color:#facc15">${p.title}</h3><p style="font-size:10px">Von: ${p.creator_name}</p></div>
+                                <div style="font-size:20px">⚔️</div>
+                            </div>`;
+                    });
                 }
             }
 
-            // LADE GLOBALE QUESTS
+            // GLOBALE QUESTS LADEN
             const { data: quests } = await sup.from('challenges').select('*');
             const list = document.getElementById('list');
-            if(quests && quests.length > 0) {
+            if(quests) {
                 list.innerHTML = '';
                 quests.forEach(q => {
-                    list.innerHTML += `<div class="card" onclick="openQuest('${q.id}', '${q.title}', '${q.description}')"><div><h3>${q.title}</h3><p>${q.description}</p></div><div class="pts">${q.points}</div></div>`;
+                    list.innerHTML += `
+                        <div class="card" onclick="openQuest('${q.id}','${q.title}','${q.description}')">
+                            <div><h3>${q.title}</h3><p>${q.description}</p></div>
+                            <div class="pts">${q.points}</div>
+                        </div>`;
                 });
             }
         }
 
-        function openQuest(id, title, desc) {
-            activeQuestId = id; activePrivateId = null;
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDesc').innerText = desc;
-            document.getElementById('normalUpload').style.display = 'block';
-            document.getElementById('privateAction').style.display = 'none';
-            document.getElementById('questModal').style.display = 'flex';
+        function openQuest(id, t, d) {
+            activeQId=id; activePId=null;
+            document.getElementById('modalTitle').innerText = t;
+            document.getElementById('modalDesc').innerText = d;
+            document.getElementById('normalUpload').style.display='block';
+            document.getElementById('privateAction').style.display='none';
+            document.getElementById('questModal').style.display='flex';
         }
 
-        function openPrivate(id, title, desc, prize, sender) {
-            activePrivateId = id; activeQuestId = null;
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDesc').innerText = "VON: " + sender + "\n\n" + desc;
-            document.getElementById('prizeDisplay').innerText = "ZIEL: " + prize;
-            document.getElementById('normalUpload').style.display = 'none';
-            document.getElementById('privateAction').style.display = 'block';
-            document.getElementById('questModal').style.display = 'flex';
+        function openPriv(id, t, d, p, c) {
+            activePId=id; activeQId=null;
+            document.getElementById('modalTitle').innerText = t;
+            document.getElementById('modalDesc').innerText = "VON: " + c + "\n\n" + d;
+            document.getElementById('prizeDisplay').innerText = "BELOHNUNG: " + p;
+            document.getElementById('normalUpload').style.display='none';
+            document.getElementById('privateAction').style.display='block';
+            document.getElementById('questModal').style.display='flex';
         }
 
-        async function completePrivateChallenge() {
-            if(!activePrivateId) return;
-            const { error } = await sup.from('user_challenges').update({ status: 'completed' }).eq('id', activePrivateId);
-            if(!error) {
-                alert("STARK! Du hast die Challenge abgeschlossen. Der Ersteller wurde benachrichtigt!");
-                closeModal();
-                location.reload();
-            }
+        async function finishPriv() {
+            await sup.from('user_challenges').update({ status: 'completed' }).eq('id', activePId);
+            alert("STARK! Erledigt!"); location.reload();
         }
 
-        function closeModal() {
-            document.getElementById('questModal').style.display = 'none';
-        }
-
-        document.getElementById('fileInput').onchange = async (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            
-            const status = document.getElementById('uploadStatus');
-            status.innerText = "BEWEIS WIRD HOCHGELADEN...";
-            
-            const fileName = `proofs/${myId}_${activeQuestId}_${Date.now()}.jpg`;
-            const { data: uploadData, error } = await sup.storage.from('app_assets').upload(fileName, file);
-            
-            if(error) {
-                alert("Upload Fehler: " + error.message);
-                status.innerText = "";
-            } else {
-                const { data: { publicUrl } } = sup.storage.from('app_assets').getPublicUrl(fileName);
-                
-                // Eintrag in die Prüf-Tabelle machen
-                const { error: subError } = await sup.from('challenge_submissions').insert([
-                    { user_id: myId, challenge_id: activeQuestId, proof_url: publicUrl, status: 'pending' }
-                ]);
-
-                if(subError) {
-                    alert("Datenbank-Fehler beim Beweis: " + subError.message);
-                } else {
-                    alert("Super! Dein Beweis wurde eingereicht. Der Admin prüft das jetzt! ⚡");
-                    closeModal();
-                }
-            }
-        }
-
-        document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href = 'index.html'; };
+        function closeModal() { document.getElementById('questModal').style.display='none'; }
+        document.getElementById('lo').onclick = async () => { await sup.auth.signOut(); window.location.href='index.html'; };
         run();
     </script>
 </body>
