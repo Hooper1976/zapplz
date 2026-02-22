@@ -31,6 +31,14 @@
         <a href="neuregistrierung.html" class="block w-full py-4 border-2 border-slate-700 rounded-2xl font-bold text-yellow-500">Hier registrieren ⚡</a>
     </div>
 
+    <script>
+        // Kill existing service workers
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+            }
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = "https://rfejtxzkahelavltsidv.supabase.co";
