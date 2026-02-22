@@ -36,43 +36,71 @@
         }
         .xp-label { background: #edff00; color: #000; padding: 5px 15px; border-radius: 5px; font-weight: 900; float: right; }
 
-        /* REALISTISCHES MENÜ UNTEN */
+        /* MODERNES TEXT-MENÜ UNTEN */
         .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
-            background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; align-items: center;
-            border-top: 2px solid #edff00; z-index: 1000;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
+            background: rgba(0,0,0,0.95); display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #edff00; z-index: 1000; padding-bottom: 10px;
         }
-        .nav-item { width: 45px; height: 45px; border-radius: 12px; background-size: cover; background-position: center; border: 1px solid #edff00; }
-        .nav-home { background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=100&q=80'); }
-        .nav-rewards { background-image: url('https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=100&q=80'); }
-        .nav-plus { width: 60px; height: 60px; margin-top: -40px; border-radius: 50%; border: 3px solid #edff00; background-image: url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=100&q=80'); box-shadow: 0 0 20px #edff00; }
-        .nav-friends { background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=100&q=80'); }
-        .nav-profile { background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80'); }
+        .nav-link { 
+            text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #edff00; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .nav-icon { 
+            width: 32px; height: 32px; border-radius: 8px; background-size: cover; background-position: center; 
+            border: 1px solid rgba(237,255,0,0.4); margin-bottom: 5px; filter: grayscale(0.5); transition: 0.3s;
+        }
+        .active .nav-icon { filter: grayscale(0); border-color: #edff00; box-shadow: 0 0 10px rgba(237,255,0,0.3); }
+        .plus-nav .nav-icon { 
+            width: 50px; height: 50px; margin-top: -45px; border-radius: 50%; border: 3px solid #edff00; 
+            filter: grayscale(0); box-shadow: 0 0 15px #edff00;
+        }
     </style>
 </head>
 <body>
     <div class="overlay-dark"></div>
     <header>
         <h1>CHALLENGE ME</h1>
-        <a href="chat.html" style="text-decoration:none; font-size:30px">📸</a>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <a href="chat.html" style="text-decoration:none; font-size:24px">💬</a>
+            <a href="index.html" style="color:#edff00; font-size:10px; text-decoration:none; border:1px solid #edff00; padding:4px 8px; border-radius:5px;">LOGOUT</a>
+        </div>
     </header>
 
-    <div class="quest-card">
-        <img src="https://images.unsplash.com/photo-1533107862482-0e6974b06ec4?auto=format&fit=crop&w=600&q=80" class="quest-img">
-        <div class="card-info">
-            <span class="xp-label">500 XP</span>
-            <div style="font-size:20px; font-weight:900">EISBADEN</div>
-            <p style="font-size:12px; margin:5px 0 0; opacity:0.8">Spring ins kalte Wasser!</p>
+    <div id="questList">
+        <!-- Hier kommen die Quests rein -->
+        <div class="quest-card">
+            <img src="https://images.unsplash.com/photo-1533107862482-0e6974b06ec4?auto=format&fit=crop&w=600&q=80" class="quest-img">
+            <div class="card-info">
+                <span class="xp-label">500 XP</span>
+                <div style="font-size:20px; font-weight:900">EISBADEN</div>
+                <p style="font-size:12px; margin:5px 0 0; opacity:0.8">Bezwinge die Kälte!</p>
+            </div>
         </div>
     </div>
 
-    <!-- Menü mit Realgrafiken -->
+    <!-- Menü mit Realgrafiken + Text -->
     <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item nav-home"></a>
-        <a href="rewards.html" class="nav-item nav-rewards"></a>
-        <a href="create_challenge.html" class="nav-item nav-plus"></a>
-        <a href="friends.html" class="nav-item nav-friends"></a>
-        <a href="profile.html" class="nav-item nav-profile"></a>
+        <a href="dashboard.html" class="nav-link active">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Home</span>
+        </a>
+        <a href="rewards.html" class="nav-link">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Rewards</span>
+        </a>
+        <a href="create_challenge.html" class="nav-link plus-nav">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Quest</span>
+        </a>
+        <a href="friends.html" class="nav-link">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Freunde</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+            <div class="nav-icon" style="background-image: url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80');"></div>
+            <span>Profil</span>
+        </a>
     </nav>
 </body>
 </html>
