@@ -15,7 +15,7 @@
 <body class="max-w-md mx-auto min-h-screen flex flex-col justify-center px-8">
     <div class="text-center mb-10">
         <h1 class="text-3xl font-black italic text-yellow-500 uppercase tracking-tighter text-left mb-2">Neues Konto</h1>
-        <p class="text-slate-400 text-left text-sm">Erstelle dein Profil für Challenge Me</p>
+        <p class="text-slate-400 text-left text-sm">V3-SYNC Online</p>
     </div>
 
     <form id="regForm" class="space-y-4">
@@ -30,23 +30,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = "https://rfejtxzkahelavltsidv.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZWp0eHprYWhlbGF2bHRzaWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzcyOTMsImV4cCI6MjA4NzM1MzI5M30.pmOns_VkC2XztdgLTIdb_ZvSpo6Ci0OvOhUpbgnJbgc";
+        const SUPABASE_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('regForm').onsubmit = async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('regBtn');
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const btn = document.getElementById('regBtn');
-            btn.innerText = "Warte...";
+            btn.innerText = "Synchronisiere...";
 
-            const { error } = await supabase.auth.signUp({ email, password });
+            const { data, error } = await supabase.auth.signUp({ email, password });
             if (error) {
                 alert("Fehler: " + error.message);
                 btn.innerText = "Konto erstellen ⚡";
-            } else {
-                alert("Erfolg! Bitte bestätige den Link in deiner E-Mail.");
+            } else if (data.user) {
+                alert("ERFOLG! Dein Konto unter der Projekt-ID pfvvpq... wurde erstellt!\nID: " + data.user.id);
                 window.location.href = 'index.html';
             }
         };
