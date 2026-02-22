@@ -38,8 +38,8 @@
                 </div>
             </div>
 
-            <h3 style="font-size: 14px; margin-top: 30px; text-align: left; opacity: 0.8;">LETZTE ERFOLGE</h3>
-            <div id="fList">Keine Quests bisher.</div>
+            <h3 style="font-size: 14px; margin-top: 30px; text-align: left; opacity: 0.8;">GEMEINSAME CHALLENGES</h3>
+            <div id="fList" style="text-align: left; margin-bottom: 20px;">Suche gemeinsame Abenteuer...</div>
             
             <button id="chatBtn" class="btn-chat">NACHRICHT SCHREIBEN 💬</button>
         </div>
@@ -50,6 +50,10 @@
         const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
         
         async function run() {
+            const { data: { session } } = await sup.auth.getSession();
+            if(!session) return window.location.href = 'index.html';
+            const myId = session.user.id;
+
             const urlParams = new URLSearchParams(window.location.search);
             const friendId = urlParams.get('id');
             if(!friendId) return window.location.href = 'friends.html';
@@ -65,14 +69,32 @@
             const date = new Date(p.created_at).toLocaleDateString('de-DE');
             document.getElementById('fSince').innerText = "Dabei seit: " + date;
 
-            // In dieser Phase laden wir einfach 0 erledigte Quests, 
-            // bis wir die 'completed_quests' Tabelle scharf schalten.
+            // Gemeinsame Quests laden (wo ich der Ersteller und er das Ziel war ODER umgekehrt)
+            const { data: challenges } = await sup.from('user_challenges')
+                .select('*')
+                .or(`and(creator_id.eq.${myId},target_id.eq.${friendId}),and(creator_id.eq.${friendId},target_id.eq.${myId})`)
+                .eq('status', 'completed')
+                .order('created_at', { ascending: false });
+            
+            const listDiv = document.getElementById('fList');
+            if(challenges && challenges.length > 0) {
+                listDiv.innerHTML = challenges.map(c => `
+                    <div class="quest-item">
+                        <div style="font-weight:bold; color:white;">${c.title}</div>
+                        <div style="font-size:10px; opacity:0.7;">Preis: ${c.prize_text || 'Ehre'}</div>
+                        <div style="font-size:10px; color:#10b981; margin-top:3px;">✅ Erledigt</div>
+                    </div>
+                `).join('');
+                document.getElementById('fQuests').innerText = challenges.length;
+            } else {
+                listDiv.innerHTML = "<p style='font-size:11px; opacity:0.4;'>Noch keine gemeinsamen Quests abgeschlossen.</p>";
+                document.getElementById('fQuests').innerText = "0";
+            }
             
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';
 
             document.getElementById('chatBtn').onclick = () => {
-                // Direkt zum Chat und den Freund vorauswählen
                 window.location.href = 'chat.html?id=' + friendId;
             };
         }
