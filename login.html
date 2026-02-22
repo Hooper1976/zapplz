@@ -83,12 +83,21 @@
         </div>
     </div>
 
-    <script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import { supabaseClient } from './config.js';
+        const supabase = supabase.createClient(supabaseClient.url, supabaseClient.key);
+
         const loginTab = document.getElementById('loginTab');
         const registerTab = document.getElementById('registerTab');
-        const loginBtn = document.querySelector('button[type="button"]');
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = loginForm.querySelector('button[type="submit"]');
+        
+        let isRegister = false;
 
         registerTab.addEventListener('click', () => {
+            isRegister = true;
             registerTab.classList.add('bg-yellow-500', 'text-black');
             registerTab.classList.remove('text-slate-400');
             loginTab.classList.remove('bg-yellow-500', 'text-black');
@@ -97,11 +106,33 @@
         });
 
         loginTab.addEventListener('click', () => {
+            isRegister = false;
             loginTab.classList.add('bg-yellow-500', 'text-black');
             loginTab.classList.remove('text-slate-400');
             registerTab.classList.remove('bg-yellow-500', 'text-black');
             registerTab.classList.add('text-slate-400');
             loginBtn.innerText = 'Anmelden 🚀';
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.querySelector('input[type="email"]').value;
+            const password = loginForm.querySelector('input[type="password"]').value;
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = 'Warte kurz...';
+
+            if (isRegister) {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) alert("Fehler: " + error.message);
+                else alert("Check deine E-Mails zur Bestätigung!");
+            } else {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) alert("Login fehlgeschlagen: " + error.message);
+                else window.location.href = 'index.html';
+            }
+            loginBtn.disabled = false;
+            loginBtn.innerText = isRegister ? 'Konto erstellen ⚡' : 'Anmelden 🚀';
         });
     </script>
 </body>
