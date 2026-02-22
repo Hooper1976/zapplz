@@ -69,26 +69,32 @@
             const date = new Date(p.created_at).toLocaleDateString('de-DE');
             document.getElementById('fSince').innerText = "Dabei seit: " + date;
 
-            // Gemeinsame Quests laden (wo ich der Ersteller und er das Ziel war ODER umgekehrt)
-            const { data: challenges } = await sup.from('user_challenges')
+            // 1. ANZAHL ALLER ERLEDIGTEN QUESTS (Global + Alle Freunde)
+            const { count: totalCompleted } = await sup.from('user_challenges')
+                .select('*', { count: 'exact', head: true })
+                .eq('target_id', friendId)
+                .eq('status', 'completed');
+            
+            document.getElementById('fQuests').innerText = totalCompleted || 0;
+
+            // 2. GEMEINSAME CHALLENGES (Detail-Liste)
+            const { data: sharedChallenges } = await sup.from('user_challenges')
                 .select('*')
                 .or(`and(creator_id.eq.${myId},target_id.eq.${friendId}),and(creator_id.eq.${friendId},target_id.eq.${myId})`)
                 .eq('status', 'completed')
                 .order('created_at', { ascending: false });
             
             const listDiv = document.getElementById('fList');
-            if(challenges && challenges.length > 0) {
-                listDiv.innerHTML = challenges.map(c => `
+            if(sharedChallenges && sharedChallenges.length > 0) {
+                listDiv.innerHTML = sharedChallenges.map(c => `
                     <div class="quest-item">
                         <div style="font-weight:bold; color:white;">${c.title}</div>
                         <div style="font-size:10px; opacity:0.7;">Preis: ${c.prize_text || 'Ehre'}</div>
                         <div style="font-size:10px; color:#10b981; margin-top:3px;">✅ Erledigt</div>
                     </div>
                 `).join('');
-                document.getElementById('fQuests').innerText = challenges.length;
             } else {
                 listDiv.innerHTML = "<p style='font-size:11px; opacity:0.4;'>Noch keine gemeinsamen Quests abgeschlossen.</p>";
-                document.getElementById('fQuests').innerText = "0";
             }
             
             document.getElementById('loading').style.display = 'none';
