@@ -3,99 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Challenge Creator - Challenge Me</title>
+    <title>Challenge Creator</title>
     <style>
-        :root {
-            --primary: #10b981;
-            --bg-dark: #061c14;
-            --bg-card: #062d24;
-            --text-light: #d1fae5;
-            --border: #064e3b;
-        }
-        body { background: var(--bg-dark); color: var(--text-light); font-family: sans-serif; margin: 0; padding: 20px; padding-bottom: 100px; }
+        body { background: #061c14; color: #10b981; font-family: sans-serif; padding: 20px; padding-bottom: 100px; text-align: center; }
+        h1 { font-style: italic; font-size: 24px; color: #10b981; text-transform: uppercase; margin-bottom: 20px; }
+        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 10px; }
+        label { display: block; text-align: left; font-size: 11px; font-weight: bold; margin: 15px 0 5px; color: #059669; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; font-size: 16px; box-sizing: border-box; }
         
-        .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-        .back-btn { background: none; border: none; color: var(--primary); font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 5px; }
-        h1 { font-size: 20px; color: white; margin: 0; text-transform: uppercase; font-weight: 800; }
-
-        .card { background: var(--bg-card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        
-        label { display: block; text-align: left; font-size: 11px; font-weight: bold; margin: 20px 0 8px; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
-        input, textarea { width: 100%; padding: 15px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 12px; color: white; font-size: 16px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
-        input:focus, textarea:focus { border-color: var(--primary); }
-
-        #preview-container { width: 100%; height: 160px; border-radius: 12px; background: var(--bg-dark); margin: 15px 0; border: 2px dashed var(--border); overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+        #preview-container { width: 100%; height: 180px; border-radius: 15px; background: #061c14; margin: 15px 0; border: 2px dashed #064e3b; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
         
-        .upload-btn { background: #4f46e5; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 12px; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .upload-btn { background: #8b5cf6; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; display: block; width: 100%; }
         
-        #friendSelector { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
-        .friend-chip { padding: 8px 16px; background: var(--bg-dark); border-radius: 20px; font-size: 13px; cursor: pointer; color: white; border: 1px solid var(--border); transition: all 0.2s; }
-        .friend-chip.selected { background: var(--primary); border-color: var(--primary); font-weight: bold; }
-
-        .btn-send { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 800; font-size: 18px; cursor: pointer; text-transform: uppercase; margin-top: 30px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(6, 28, 20, 0.95); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-link { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); opacity: 0.6; font-size: 10px; font-weight: 600; }
-        .nav-link.active { color: var(--primary); opacity: 1; }
-        .nav-link i { font-size: 20px; margin-bottom: 4px; }
-        .btn-plus { width: 55px; height: 55px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -40px; border: 5px solid var(--bg-dark); color: white; font-size: 24px; text-decoration: none; }
+        .friend-chip { display: inline-block; padding: 8px 15px; background: #064e3b; border-radius: 20px; margin: 5px; font-size: 12px; cursor: pointer; color: white; border: 1px solid transparent; }
+        .friend-chip.selected { background: #10b981; border-color: white; font-weight: bold; }
+        .btn-send { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
+        
+        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav a { color: white; font-size: 24px; text-decoration: none; }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="header-top">
-        <a href="dashboard.html" class="back-btn"><i class="fas fa-chevron-left"></i> ABBRECHEN</a>
-        <h1>Erstellen</h1>
-        <div style="width: 20px;"></div>
-    </div>
+    <h1>Erstellen</h1>
 
     <div class="card">
-        <label>An wen geht die Challenge?</label>
-        <div id="friendSelector">Lade Freunde...</div>
+        <label>An wen?</label>
+        <div id="friendSelector" style="text-align: left;">Lade Freunde...</div>
 
-        <label>Was ist die Aufgabe?</label>
-        <input type="text" id="title" placeholder="Kurzer Titel (z.B. 10 Liegestütze)">
+        <label>Was ist die Challenge?</label>
+        <input type="text" id="title" placeholder="Titel">
 
-        <label>Titelbild / Hintergrund 📸</label>
+        <label>Titelbild wählen 📸</label>
         <div id="preview-container">
-            <span id="preview-text" style="font-size:11px; opacity:0.4;">BILD VORSCHAU</span>
+            <span id="preview-text" style="font-size:10px; opacity:0.5;">KEIN BILD GEWÄHLT</span>
             <img id="preview-img">
         </div>
         <input type="file" id="coverFile" accept="image/*" style="display:none">
-        <button class="upload-btn" onclick="document.getElementById('coverFile').click()"><i class="fas fa-image"></i> BILD AUSWÄHLEN</button>
+        <button class="upload-btn" onclick="document.getElementById('coverFile').click()">EIGENES BILD HOCHLADEN 🎨</button>
         <input type="hidden" id="final-img-url">
 
-        <label>Details & Regeln</label>
-        <textarea id="desc" rows="3" placeholder="Beschreibe die Aufgabe genauer..."></textarea>
+        <label>Details / Aufgaben</label>
+        <textarea id="desc" rows="3" placeholder="Beschreibung..."></textarea>
 
-        <label>Belohnung / Wetteinsatz</label>
-        <input type="text" id="prize" placeholder="z.B. Ein großes Bier">
+        <label>Der Preis</label>
+        <input type="text" id="prize" placeholder="z.B. 1 Burger">
 
-        <button id="sendBtn" class="btn-send">Herausforderung senden <i class="fas fa-paper-plane"></i></button>
+        <button id="sendBtn" class="btn-send">ABSENDEN 🔥</button>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-link">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="rewards.html" class="nav-link">
-            <i class="fas fa-gift"></i>
-            <span>Rewards</span>
-        </a>
-        <a href="create_challenge.html" class="btn-plus">
-            <i class="fas fa-plus"></i>
-        </a>
-        <a href="friends.html" class="nav-link">
-            <i class="fas fa-users"></i>
-            <span>Freunde</span>
-        </a>
-        <a href="profile.html" class="nav-link">
-            <i class="fas fa-user-circle"></i>
-            <span>Profil</span>
-        </a>
-    </nav>
+    <div class="nav">
+        <a href="dashboard.html">🏠</a>
+        <a href="rewards.html">🎁</a>
+        <a href="create_challenge.html" style="background:white; color:#10b981; width:45px; height:45px; border-radius:30px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
+        <a href="friends.html">👥</a>
+        <a href="profile.html">👤</a>
+    </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
@@ -107,13 +70,11 @@
             const { data: { session } } = await sup.auth.getSession();
             if(!session) return window.location.href = 'index.html';
             const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
-            myName = profile?.username;
+            myName = profile.username;
 
             const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id).eq('status', 'accepted');
-            const selector = document.getElementById('friendSelector'); 
-            selector.innerHTML = '';
-            
-            if(fships && fships.length > 0) {
+            const selector = document.getElementById('friendSelector'); selector.innerHTML = '';
+            if(fships) {
                 const ids = fships.map(f => f.user_id_2);
                 const { data: profiles } = await sup.from('profiles').select('username').in('id', ids);
                 profiles.forEach(p => {
@@ -124,8 +85,6 @@
                     };
                     selector.appendChild(chip);
                 });
-            } else {
-                selector.innerHTML = '<p style="font-size:12px; opacity:0.5;">Noch keine Freunde gefunden.</p>';
             }
 
             document.getElementById('coverFile').onchange = async (e) => {
@@ -139,8 +98,8 @@
                     document.getElementById('preview-img').src = publicUrl;
                     document.getElementById('preview-img').style.display = 'block';
                     document.getElementById('preview-text').style.display = 'none';
-                    btn.innerText = "BILD GELADEN ✔";
-                } else { alert("Fehler: " + error.message); btn.innerText = "FEHLER BEIM UPLOAD"; }
+                    btn.innerText = "BILD ERFOLGREICH GELADEN!";
+                } else { alert("Fehler: " + error.message); btn.innerText = "NOCHMAL VERSUCHEN"; }
             };
 
             document.getElementById('sendBtn').onclick = async () => {
@@ -149,19 +108,14 @@
                 const p = document.getElementById('prize').value;
                 const cover = document.getElementById('final-img-url').value || "https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=600&q=80";
 
-                if(!selectedFriends.length || !t) return alert("Wähle mindestens einen Freund und einen Titel!");
-
-                const btn = document.getElementById('sendBtn');
-                btn.innerText = "SENDE...";
-                btn.disabled = true;
+                if(!selectedFriends.length || !t) return alert("Freunde und Titel fehlen!");
 
                 const insertData = selectedFriends.map(f => ({
                     creator_name: myName, target_name: f, title: t, description: d, prize_text: p, cover_image_url: cover, status: 'pending'
                 }));
 
                 const { error } = await sup.from('user_challenges').insert(insertData);
-                if(!error) { alert("Challenge erfolgreich verschickt! 🚀"); window.location.href = 'dashboard.html'; }
-                else { alert("Fehler: " + error.message); btn.innerText = "NOCHMAL VERSUCHEN"; btn.disabled = false; }
+                if(!error) { alert("ABGESENDET! 🚀"); window.location.href = 'dashboard.html'; }
             }
         }
         init();
