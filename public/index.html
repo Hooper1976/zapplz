@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZAPPLZ – Deine Welt. Deine Action.</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #063c2c 0%, var(--bg-deep) 70%);
+        }
+        .main-logo-container {
+            margin-bottom: 30px;
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse {
+            0% { filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.4)); }
+            50% { filter: drop-shadow(0 0 40px rgba(16, 185, 129, 0.7)); }
+            100% { filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.4)); }
+        }
+        .headline { font-size: 4rem; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: -2px; }
+        .headline span { color: var(--primary); }
+        .subheadline { font-size: 1.1rem; color: var(--text-dim); margin-top: 10px; max-width: 400px; }
+    </style>
+</head>
+<body>
+
+    <header class="glass-header">
+        <a href="#" class="logo-brand">
+            <div class="logo-circle">Z</div>
+            ZAPPLZ
+        </a>
+        <a href="login.html" style="color: var(--primary); text-decoration: none; font-weight: bold; font-size: 0.9rem;">LOGIN</a>
+    </header>
+
+    <main class="hero">
+        <div class="main-logo-container">
+            <img src="logo.png" alt="ZAPPLZ Logo" style="width: 220px; height: 220px; object-fit: contain;">
+        </div>
+        <h1 class="headline">ZAPP<span>LZ</span></h1>
+        <p class="subheadline">Verwandle deinen Alltag in ein Multiplayer-Spiel. Echte Challenges, echte Action, echte Freunde.</p>
+        <div style="margin-top: 40px;">
+            <a href="login.html" class="btn-neon">Jetzt kostenlos starten</a>
+        </div>
+    </main>
+
+</body>
+</html>

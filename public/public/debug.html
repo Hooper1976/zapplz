@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Me - DEBUG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-green-500 font-mono p-8">
+    <h1 class="text-2xl mb-4 text-white">System Debug</h1>
+    <div id="status" class="space-y-2">
+        <p>Prüfe Verbindung...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://rfejtxzkahelavltsidv.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmZWp0eHprYWhlbGF2bHRzaWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NzcyOTMsImV4cCI6MjA4NzM1MzI5M30.pmOns_VkC2XztdgLTIdb_ZvSpo6Ci0OvOhUpbgnJbgc";
+        
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML += "<p>Verbinde zu: " + SUPABASE_URL + "</p>";
+
+        try {
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            statusDiv.innerHTML += "<p class='text-blue-400'>Client instanziiert.</p>";
+            
+            supabase.auth.getSession().then(({data, error}) => {
+                if (error) {
+                    statusDiv.innerHTML += "<p class='text-red-500'>Fehler: " + error.message + "</p>";
+                } else {
+                    statusDiv.innerHTML += "<p class='text-green-500'>Verbindung zum Auth-Server STEHT!</p>";
+                    statusDiv.innerHTML += "<p class='text-slate-400 mt-4 italic'>Die Daten oben MÜSSEN mit deinem Dashboard unter Project Settings -> API übereinstimmen.</p>";
+                }
+            });
+        } catch (e) {
+            statusDiv.innerHTML += "<p class='text-red-500'>Kritischer Fehler: " + e.message + "</p>";
+        }
+    </script>
+</body>
+</html>

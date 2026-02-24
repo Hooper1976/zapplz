@@ -1,0 +1,132 @@
+/* css/styles.css */
+:root {
+    --primary: #10b981;
+    --primary-glow: rgba(16, 185, 129, 0.4);
+    --neon: #34d399;
+    --bg-deep: #04100b;
+    --bg-card: #062017;
+    --border: #064e3b;
+    --text-main: #ecfdf5;
+    --text-dim: #a7f3d0;
+}
+
+body {
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 85px; /* Space for bottom nav */
+}
+
+/* Header */
+.glass-header {
+    background: rgba(4, 16, 11, 0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--border);
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+/* Bottom Nav */
+.bottom-nav-zapplz {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 75px;
+    background: rgba(4, 16, 11, 0.95);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-link-z {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-dim);
+    opacity: 0.6;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.nav-link-z.active {
+    color: var(--primary);
+    opacity: 1;
+}
+
+.nav-link-z i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.btn-plus-z {
+    width: 55px;
+    height: 55px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -40px;
+    border: 5px solid var(--bg-deep);
+    color: white;
+    font-size: 24px;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* Elements */
+.btn-neon {
+    background: var(--primary);
+    color: white;
+    padding: 15px 35px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px var(--primary-glow);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 15px;
+}
+
+.section-label {
+    padding: 0 20px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.5;
+    margin-top: 20px;
+}

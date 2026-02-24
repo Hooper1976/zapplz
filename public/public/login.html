@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anmeldung - ZAPPLZ</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { 
+            background: radial-gradient(circle at center, #063c2c 0%, var(--bg-deep) 70%); 
+            color: var(--text-main); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            text-align: center; 
+        }
+        .main-bg-logo {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 320px; height: 320px; opacity: 0.1; z-index: -1; pointer-events: none;
+            animation: pulse 4s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.08; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.15; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.08; }
+        }
+        .login-box { 
+            background: rgba(6, 32, 23, 0.7); 
+            backdrop-filter: blur(10px);
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 360px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+        }
+        .logo-small { width: 60px; height: 60px; object-fit: contain; margin-bottom: 20px; }
+        h1 { font-size: 24px; font-weight: 900; margin-bottom: 30px; letter-spacing: 1px; color: white; }
+        input { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-deep); color: white; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .btn-submit { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        .toggle-text { margin-top: 25px; display: block; color: var(--primary); font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .modal-card { background: var(--bg-card); border: 2px solid var(--primary); padding: 35px; border-radius: 24px; max-width: 300px; width: 80%; box-shadow: 0 0 30px var(--primary-glow); }
+        .modal-card i { font-size: 40px; color: var(--primary); margin-bottom: 20px; }
+        .modal-card h2 { margin: 0 0 10px; color: white; font-size: 1.5rem; }
+        .modal-card p { opacity: 0.8; font-size: 0.9rem; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+    <div class="main-bg-logo">
+        <img src="logo.png" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
+    <div class="login-box">
+        <img src="/logo.png" class="logo-small" alt="ZAPPLZ Logo">
+        <h1>ZAPPLZ</h1>
+        <p id="mode-label" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); font-weight: 900; margin-bottom: 20px;">Login</p>
+        <form id="authForm">
+            <input type="text" id="username" placeholder="Dein Wunsch-Username" style="display:none">
+            <input type="email" id="email" placeholder="E-Mail Adresse" required>
+            <input type="password" id="pass" placeholder="Passwort" required minlength="6">
+            <button type="submit" id="btnSubmit" class="btn-submit">LOGIN</button>
+        </form>
+        <span id="toggleBtn" class="toggle-text">Noch kein Konto? Registrieren</span>
+    </div>
+
+    <!-- Popup -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-card">
+            <i class="fas fa-check-circle"></i>
+            <h2>Willkommen!</h2>
+            <p id="modalText">Dein Profil wurde erfolgreich erstellt.</p>
+            <button class="btn-submit" onclick="window.location.href='dashboard.html'">ZAPPLZ STARTEN</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const sup = window.supabase.createClient("https://oxwpqwnhabldvfsujmvx.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94d3Bxd25oYWJsZHZmc3VqbXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTMzMDQsImV4cCI6MjA4NzQyOTMwNH0.ZDz0Pctbp9oq45QF8_4ObizhQfxglrGw9H0dhguHj5A");
+        let isLoginMode = true;
+
+        document.getElementById('toggleBtn').onclick = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('mode-label').innerText = isLoginMode ? "Login" : "Registrierung";
+            document.getElementById('btnSubmit').innerText = isLoginMode ? "LOGIN" : "ERSTELLEN";
+            document.getElementById('toggleBtn').innerText = isLoginMode ? "Noch kein Konto? Registrieren" : "Zurück zum Login";
+            document.getElementById('username').style.display = isLoginMode ? "none" : "block";
+            document.getElementById('username').required = !isLoginMode;
+        };
+
+        document.getElementById('authForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit'); btn.disabled = true;
+            const em = document.getElementById('email').value;
+            const pa = document.getElementById('pass').value;
+            const us = document.getElementById('username').value.trim();
+            
+            try {
+                if(isLoginMode) {
+                    const { error } = await sup.auth.signInWithPassword({ email: em, password: pa });
+                    if(error) throw error;
+                    window.location.href = 'dashboard.html';
+                } else {
+                    const { data: existingUser } = await sup.from('profiles').select('username').eq('username', us).single();
+                    if(existingUser) throw new Error("Username vergeben!");
+                    const { data, error } = await sup.auth.signUp({ email: em, password: pa });
+                    if(error) throw error;
+                    await sup.from('profiles').insert([{ id: data.user.id, username: us, total_points: 0, level: 1 }]);
+                    document.getElementById('modalText').innerText = `Hey ${us}, dein Profil ist bereit!`;
+                    document.getElementById('successModal').style.display = 'flex';
+                }
+            } catch (err) {
+                alert("Fehler: " + err.message);
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

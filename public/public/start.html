@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Challenge Me - Start</title>
+    <!-- Wir verzichten auf externe Schriften um Ladeblockaden zu vermeiden -->
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            background-color: #061c14; 
+            color: #d1fae5; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 360px;
+            padding: 30px;
+        }
+        .logo-box {
+            background: #10b981;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+        }
+        h1 {
+            color: #10b981;
+            font-size: 32px;
+            font-weight: 900;
+            font-style: italic;
+            margin: 0 0 10px;
+            letter-spacing: -1px;
+        }
+        p { color: #064e3b; font-size: 14px; font-weight: bold; margin-bottom: 30px; text-transform: uppercase; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        input {
+            width: 100%;
+            padding: 16px;
+            background: #062118;
+            border: 2px solid #064e3b;
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: #10b981; }
+
+        .btn-main {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: 900;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(6, 78, 59, 0.3);
+        }
+        .btn-main:active { transform: scale(0.98); }
+        
+        .toggle-link {
+            margin-top: 25px;
+            display: block;
+            color: #10b981;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        #msg { margin-top: 20px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-box">⚡</div>
+        <h1>CHALLENGE ME</h1>
+        <p id="subt">Login / Start</p>
+
+        <form id="authForm">
+            <div class="input-group">
+                <input type="email" id="email" placeholder="E-Mail" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Passwort" required>
+            </div>
+            <button type="submit" id="btn" class="btn-main">LOS GEHT'S 🚀</button>
+        </form>
+
+        <a href="#" id="toggle" class="toggle-link">NOCH KEIN KONTO? REGISTRIEREN ⚡</a>
+        
+        <div id="msg"></div>
+    </div>
+
+    <!-- Supabase direkt von Unpkg (stabil) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const S_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+        const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
+        const supabase = window.supabase.createClient(S_URL, S_KEY);
+
+        let isLogin = true;
+        const form = document.getElementById('authForm');
+        const btn = document.getElementById('btn');
+        const toggle = document.getElementById('toggle');
+        const subt = document.getElementById('subt');
+        const msg = document.getElementById('msg');
+
+        toggle.onclick = (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+            subt.innerText = isLogin ? "Login / Start" : "Neues Konto erstellen";
+            btn.innerText = isLogin ? "LOS GEHT'S 🚀" : "JETZT REGISTRIEREN ⚡";
+            toggle.innerText = isLogin ? "NOCH KEIN KONTO? REGISTRIEREN ⚡" : "BEREITS KONTO? LOGIN";
+        };
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            btn.disabled = true;
+            btn.innerText = "VERARBEITE...";
+            msg.innerText = "";
+
+            try {
+                if (isLogin) {
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    window.location.href = 'dashboard.html';
+                } else {
+                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    alert("Erfolg! Account angelegt. Melde dich jetzt an.");
+                    isLogin = true;
+                    toggle.click();
+                }
+            } catch (err) {
+                alert("Fehler: " + err.message);
+                btn.disabled = false;
+                btn.innerText = isLogin ? "LOS GEHT'S 🚀" : "JETZT REGISTRIEREN ⚡";
+            }
+        };
+    </script>
+</body>
+</html>

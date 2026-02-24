@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Challenge Me - Register</title>
+    <style>
+        body { background: #061c14; color: #10b981; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+        .box { background: #062d24; padding: 30px; border-radius: 20px; width: 100%; max-width: 320px; border: 1px solid #10b981; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #064e3b; background: #061c14; color: white; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #10b981; color: white; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        .link { margin-top: 20px; display: block; color: #10b981; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 style="margin-top:0">Neues Konto</h2>
+        <form id="rForm">
+            <input type="email" id="e" placeholder="E-Mail" required>
+            <input type="password" id="p" placeholder="Passwort" required>
+            <button type="submit" id="btn">KONTO ERSTELLEN</button>
+        </form>
+        <a href="index.html" class="link">Zurück zum Login</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const S_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+        const S_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
+        const supabase = window.supabase.createClient(S_URL, S_KEY);
+
+        document.getElementById('rForm').onsubmit = async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById('btn');
+            btn.innerText = "Sende...";
+
+            const { data, error } = await supabase.auth.signUp({
+                email: document.getElementById('e').value,
+                password: document.getElementById('p').value
+            });
+
+            if (error) {
+                alert("Fehler: " + error.message);
+                btn.innerText = "KONTO ERSTELLEN";
+            } else {
+                alert("ERFOLG! User ID: " + data.user.id);
+                window.location.href = 'index.html';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLEAN TEST</title>
+</head>
+<body style="background: white; color: black; padding: 20px; font-family: sans-serif;">
+    <h1>CLEAN TEST v2</h1>
+    <p>Projekt-ID: pfvvpqljjfmyvtyiuibh</p>
+    
+    <div style="margin-bottom: 20px;">
+        <input type="email" id="fEmail" placeholder="E-Mail" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc;">
+        <input type="password" id="fPass" placeholder="Passwort" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc;">
+        <button id="fBtn" style="width: 100%; padding: 20px; background: orange; font-weight: bold; border: none; cursor: pointer;">
+            JETZT REGISTRIEREN
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        console.log("Script geladen");
+        document.getElementById('fBtn').addEventListener('click', async function() {
+            const email = document.getElementById('fEmail').value;
+            const password = document.getElementById('fPass').value;
+            const btn = document.getElementById('fBtn');
+            
+            btn.innerText = "Sende...";
+            btn.style.background = "grey";
+            
+            try {
+                const SUPABASE_URL = "https://pfvvpqljjfmyvtyiuibh.supabase.co";
+                const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4";
+                const sup = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                const result = await sup.auth.signUp({ email, password });
+                
+                if (result.error) {
+                    alert("FEHLER: " + result.error.message);
+                } else if (result.data.user) {
+                    alert("ERFOLG! ID: " + result.data.user.id);
+                } else {
+                    alert("Komisches Ergebnis: " + JSON.stringify(result));
+                }
+            } catch (err) {
+                alert("CRASH: " + err.message);
+            }
+            
+            btn.innerText = "JETZT REGISTRIEREN";
+            btn.style.background = "orange";
+        });
+    </script>
+</body>
+</html>
