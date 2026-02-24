@@ -4,7 +4,7 @@ function injectHeader(title = "ZAPPLZ", showLogout = true) {
     header.className = 'glass-header';
     header.innerHTML = `
         <div class="logo-brand" onclick="window.location.href='dashboard.html'" style="cursor:pointer">
-            <img src="/logo.png" style="width:30px; height:30px; object-fit:contain; border-radius:5px;">
+            <img src="logo.png" style="width:30px; height:30px; object-fit:contain; border-radius:5px;">
             ${title}
         </div>
         <div style="display:flex; gap:15px; align-items:center;">
