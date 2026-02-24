@@ -3,78 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Challenge Creator</title>
+    <title>Create Quest - ZAPPLZ</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #061c14; color: #10b981; font-family: sans-serif; padding: 20px; padding-bottom: 100px; text-align: center; }
-        h1 { font-style: italic; font-size: 24px; color: #10b981; text-transform: uppercase; margin-bottom: 20px; }
-        .card { background: #062d24; padding: 20px; border-radius: 20px; border: 1px solid #064e3b; margin-top: 10px; }
-        label { display: block; text-align: left; font-size: 11px; font-weight: bold; margin: 15px 0 5px; color: #059669; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 15px; background: #061c14; border: 1px solid #064e3b; border-radius: 12px; color: white; font-size: 16px; box-sizing: border-box; }
+        body { 
+            background: radial-gradient(circle at center, #063c2c 0%, var(--bg-deep) 70%); 
+            min-height: 100vh; padding-bottom:100px;
+        }
+        .main-bg-logo {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 300px; height: 300px; opacity: 0.05; z-index: -1; pointer-events: none;
+        }
+        .form-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 24px; padding: 25px; margin: 20px;
+        }
+        label { 
+            display: block; text-align: left; font-size: 10px; font-weight: 800; 
+            margin: 15px 0 8px; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;
+        }
+        input, textarea { 
+            width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--border); 
+            background: rgba(4, 16, 11, 0.6); color: white; box-sizing: border-box; font-size: 15px; outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
         
-        #preview-container { width: 100%; height: 180px; border-radius: 15px; background: #061c14; margin: 15px 0; border: 2px dashed #064e3b; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        #preview-box { 
+            width: 100%; height: 160px; border-radius: 18px; background: rgba(0,0,0,0.3); 
+            margin: 10px 0; border: 2px dashed var(--border); overflow: hidden; 
+            display: flex; align-items: center; justify-content: center;
+        }
         #preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
         
-        .upload-btn { background: #8b5cf6; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; display: block; width: 100%; }
+        .btn-upload { 
+            background: #4f46e5; color: white; padding: 12px; border-radius: 12px; 
+            border: none; font-weight: bold; font-size: 12px; cursor: pointer; display: block; width: 100%;
+        }
         
-        .friend-chip { display: inline-block; padding: 8px 15px; background: #064e3b; border-radius: 20px; margin: 5px; font-size: 12px; cursor: pointer; color: white; border: 1px solid transparent; }
-        .friend-chip.selected { background: #10b981; border-color: white; font-weight: bold; }
-        .btn-send { width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
-        
-        .nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #10b981; padding: 15px; border-radius: 20px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .nav a { color: white; font-size: 24px; text-decoration: none; }
+        .friend-chip { 
+            display: inline-block; padding: 10px 18px; background: var(--bg-deep); border-radius: 50px; 
+            margin: 4px; font-size: 12px; cursor: pointer; color: white; border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .friend-chip.selected { 
+            background: var(--primary); border-color: white; font-weight: 900; 
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
     </style>
 </head>
 <body>
-    <h1>Erstellen</h1>
 
-    <div class="card">
-        <label>An wen?</label>
-        <div id="friendSelector" style="text-align: left;">Lade Freunde...</div>
+    <div class="main-bg-logo">
+        <img src="logo.png" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
 
-        <label>Was ist die Challenge?</label>
-        <input type="text" id="title" placeholder="Titel">
+    <div class="form-card">
+        <h2 style="font-size: 1.4rem; font-weight: 900; color: white; margin: 0 0 5px; text-transform: uppercase;">Neue Quest</h2>
+        <p style="font-size: 0.8rem; opacity: 0.5; margin-bottom: 20px;">Fordere deine Freunde heraus.</p>
 
-        <label>Titelbild wählen 📸</label>
-        <div id="preview-container">
-            <span id="preview-text" style="font-size:10px; opacity:0.5;">KEIN BILD GEWÄHLT</span>
+        <label>An wen geht die Action?</label>
+        <div id="friendSelector" style="text-align: left; margin-bottom: 10px;">Lade Freunde...</div>
+
+        <label>Challenge Titel</label>
+        <input type="text" id="title" placeholder="z.B. 10km Laufen">
+
+        <label>Titelbild (Optional)</label>
+        <div id="preview-box">
+            <span id="preview-text" style="font-size:10px; opacity:0.3;">NO IMAGE SELECTED</span>
             <img id="preview-img">
         </div>
         <input type="file" id="coverFile" accept="image/*" style="display:none">
-        <button class="upload-btn" onclick="document.getElementById('coverFile').click()">EIGENES BILD HOCHLADEN 🎨</button>
+        <button class="btn-upload" onclick="document.getElementById('coverFile').click()">
+            <i class="fas fa-camera"></i> BILD WÄHLEN
+        </button>
         <input type="hidden" id="final-img-url">
 
-        <label>Details / Aufgaben</label>
-        <textarea id="desc" rows="3" placeholder="Beschreibung..."></textarea>
+        <label>Beschreibung / Regeln</label>
+        <textarea id="desc" rows="3" placeholder="Was genau muss getan werden?"></textarea>
 
-        <label>Der Preis</label>
-        <input type="text" id="prize" placeholder="z.B. 1 Burger">
+        <label>Der Preis für den Sieger</label>
+        <input type="text" id="prize" placeholder="z.B. Ein Essen ausgeben">
 
-        <button id="sendBtn" class="btn-send">ABSENDEN 🔥</button>
-    </div>
-
-    <div class="nav">
-        <a href="dashboard.html">🏠</a>
-        <a href="rewards.html">🎁</a>
-        <a href="create_challenge.html" style="background:white; color:#10b981; width:45px; height:45px; border-radius:30px; display:flex; align-items:center; justify-content:center; margin-top:-35px; border:4px solid #061c14; font-weight:bold;">+</a>
-        <a href="friends.html">👥</a>
-        <a href="profile.html">👤</a>
+        <button id="sendBtn" class="btn-neon" style="width: 100%; margin-top: 30px; padding: 18px;">
+            JETZT ABSENDEN 🚀
+        </button>
     </div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="js/shared_nav.js"></script>
     <script>
-        const sup = window.supabase.createClient("https://pfvvpqljjfmyvtyiuibh.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdnZwcWxqamZteXZ0eWl1aWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3Nzc4OTAsImV4cCI6MjA4NzM1Mzg5MH0.cLodoc6oi8LiHdK_YVlzK7nnPQP7S5f8ewR79DP3Ve4");
+        const sup = window.supabase.createClient("https://oxwpqwnhabldvfsujmvx.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94d3Bxd25oYWJsZHZmc3VqbXZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTMzMDQsImV4cCI6MjA4NzQyOTMwNH0.ZDz0Pctbp9oq45QF8_4ObizhQfxglrGw9H0dhguHj5A");
         let selectedFriends = [];
         let myName = "";
 
         async function init() {
+            injectHeader("Quest Creator");
+            injectBottomNav(""); // Plus Button ist in der Nav enthalten
+
             const { data: { session } } = await sup.auth.getSession();
-            if(!session) return window.location.href = 'index.html';
+            if(!session) return window.location.href = 'login.html';
             const { data: profile } = await sup.from('profiles').select('username').eq('id', session.user.id).single();
             myName = profile.username;
 
             const { data: fships } = await sup.from('friendships').select('user_id_2').eq('user_id_1', session.user.id).eq('status', 'accepted');
             const selector = document.getElementById('friendSelector'); selector.innerHTML = '';
-            if(fships) {
+            if(fships && fships.length > 0) {
                 const ids = fships.map(f => f.user_id_2);
                 const { data: profiles } = await sup.from('profiles').select('username').in('id', ids);
                 profiles.forEach(p => {
@@ -85,11 +119,13 @@
                     };
                     selector.appendChild(chip);
                 });
+            } else {
+                selector.innerHTML = '<p style="font-size:0.7rem; opacity:0.5;">Noch keine Freunde gefunden.</p>';
             }
 
             document.getElementById('coverFile').onchange = async (e) => {
                 const file = e.target.files[0]; if(!file) return;
-                const btn = document.querySelector('.upload-btn'); btn.innerText = "LÄDT HOCH...";
+                const btn = document.querySelector('.btn-upload'); btn.innerText = "LÄDT HOCH...";
                 const fileName = `covers/${Date.now()}_${file.name}`;
                 const { data, error } = await sup.storage.from('app_assets').upload(fileName, file);
                 if(!error) {
@@ -98,8 +134,8 @@
                     document.getElementById('preview-img').src = publicUrl;
                     document.getElementById('preview-img').style.display = 'block';
                     document.getElementById('preview-text').style.display = 'none';
-                    btn.innerText = "BILD ERFOLGREICH GELADEN!";
-                } else { alert("Fehler: " + error.message); btn.innerText = "NOCHMAL VERSUCHEN"; }
+                    btn.innerText = "BILD GELADEN!";
+                } else { alert("Fehler: " + error.message); btn.innerText = "BILD WÄHLEN"; }
             };
 
             document.getElementById('sendBtn').onclick = async () => {
@@ -108,14 +144,18 @@
                 const p = document.getElementById('prize').value;
                 const cover = document.getElementById('final-img-url').value || "https://images.unsplash.com/photo-1541571440-2051e0413009?auto=format&fit=crop&w=600&q=80";
 
-                if(!selectedFriends.length || !t) return alert("Freunde und Titel fehlen!");
+                if(!selectedFriends.length) return alert("Wähle mindestens einen Freund!");
+                if(!t) return alert("Gib der Challenge einen Titel!");
+
+                const b = document.getElementById('sendBtn'); b.innerText = "SENDE..."; b.disabled = true;
 
                 const insertData = selectedFriends.map(f => ({
                     creator_name: myName, target_name: f, title: t, description: d, prize_text: p, cover_image_url: cover, status: 'pending'
                 }));
 
                 const { error } = await sup.from('user_challenges').insert(insertData);
-                if(!error) { alert("ABGESENDET! 🚀"); window.location.href = 'dashboard.html'; }
+                if(!error) { alert("QUEST VERSCHICKT! 🔥"); window.location.href = 'dashboard.html'; }
+                else { alert("Fehler beim Senden."); b.innerText = "JETZT ABSENDEN 🚀"; b.disabled = false; }
             }
         }
         init();
